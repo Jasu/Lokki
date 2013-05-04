@@ -1,12 +1,10 @@
 import sys
+from lokki.util import dieIf
 from lokki.db.client import Client
 
 def getClientByHandle(handle, session):
   client = session.query(Client).filter_by(handle=handle).first()
-  if (not client): 
-    sys.stderr.write("Client not found by handle '" + handle + "'.\n");
-    sys.stderr.write("Nothing done.\n")
-    sys.exit(1)
+  dieIf(not client, "Client not found by handle '" + handle + "'.")
   return client
 
 def getClientFields():

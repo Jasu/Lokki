@@ -1,13 +1,9 @@
 import sys
 from lokki.db.setting import Setting
+from lokki.db.invoice import Invoice
 from lokki.config import isConfigurationValid, getConfiguration
 from lokki.client import getClientByHandle
-
-def checkConfiguration(session):
-  if not isConfigurationValid(session):
-    sys.stderr.write("Configuration must be complete before invoicing.\n")
-    sys.stderr.write("Nothing done.\n")
-    sys.exit(1)
+from lokki.util import dieIf
 
 def getNextInvoiceNumberAndIncrement(session):
   """
@@ -27,7 +23,7 @@ def addChecksum(reference):
   remainder = reference
   weight = 7
   while remainder:
-    checksum += remainder % 10
+    checksum += weight * (remainder % 10)
     remainder = int(remainder / 10)
 
     if weight == 7:
@@ -36,7 +32,10 @@ def addChecksum(reference):
       weight = 1
     else:
       weight = 7
+
   checksum = 10 - checksum % 10
+  if checksum == 10:
+    checksum = 0
   return str(reference) + str(checksum)
 
 
@@ -48,6 +47,8 @@ def initializeClientFields(client, invoice):
   """
   Fills in client_id and copies client data to the invoice.
   """
+
+  invoice.client = client
 
   invoice.client_name = client.name
   if client.client_number:
@@ -79,4 +80,17 @@ def parseDate(date):
   else:
     # ISO date
     return datetime.strptime(date, '%Y-%m-%d')
+
+def findInvoice(session, args):
+  if args.invoice_number:
+    invoice = session.query(Invoice).filter_by(invoice_number=args.invoice_number).first()
+    dieIf(not invoice, 
+      "Invoice not found by invoice number '" + args.invoice_number+"'.")
+    return invoice
+  else:
+    invoice = (session.query(Invoice)
+                      .order_by(Invoice.time_added.desc())
+                      .first())
+    dieIf(not invoice, "No invoices exist yet.")
+    return invoice
 

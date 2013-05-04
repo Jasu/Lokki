@@ -154,7 +154,7 @@ db = None
 session = None
 if 'LK_DB_PATH' in os.environ:
   db = sqlalchemy.create_engine('sqlite:///' + os.environ['LK_DB_PATH'])
-  session = sessionmaker(bind=db)()
+  session = sessionmaker(bind=db, autoflush=False)()
 
 ###############################################################################
 # Invoke the command                                                          #

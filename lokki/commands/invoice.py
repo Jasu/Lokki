@@ -1,12 +1,15 @@
 from datetime import datetime, timedelta
+from prettytable import PrettyTable
 
+from lokki.util import dieIf
 from lokki.db.invoice import Invoice
 from lokki.db.client import Client
 from lokki.invoice import *
 from lokki.config import getSetting
 
 def commandInvoiceAdd(args, session):
-  checkConfiguration(session)
+  dieIf(not isConfigurationValid(session), 
+    "Cannot execute invoicing commands with incomplete configuration.")
 
   invoice = Invoice()
 
@@ -14,17 +17,11 @@ def commandInvoiceAdd(args, session):
     client = getClientByHandle(args.client_handle, session)
   else:
     clientId = getSetting(session, 'default-client')
-    if not clientId:
-      sys.stderr.write("Default client is not set and no --client-handle was set.\n")
-      sys.stderr.write("Nothing done.\n")
-      sys.exit(1)
-
+    dieIf(not clientId,
+      "Default client is not set and no --client-handle was set.")
     client = session.query(Client).filter_by(id=clientId).first()
 
-  if not client:
-    sys.stderr.write("Client was not found.\n")
-    sys.stderr.write("Nothing done.\n")
-    sys.exit(1)
+  dieIf(not client, "Default client not set and no --client-handle was set.")
 
   initializeClientFields(client, invoice)
 
@@ -36,7 +33,7 @@ def commandInvoiceAdd(args, session):
   else:
     date = datetime.now()
 
-  invoice.date = date#.strftime('%Y-%m-%d')
+  invoice.date = date
 
   if args.duedate:
     duedate = parseDate(args.duedate)
@@ -44,13 +41,10 @@ def commandInvoiceAdd(args, session):
     duedate = date + timedelta(days=int(args.duedays))
   else:
     duedays = getSetting(session, 'default-due-days')
-    if not duedays:
-      sys.stderr.write("Due date not specified and no default-due-days.\n")
-      sys.stderr.write("Nothing done.\n")
-      sys.exit(1)
+    dieIf(not duedays, "Due date not specified and no default-due-days.")
     duedate = date + timedelta(days=int(duedays))
 
-  invoice.due_date = duedate#.strftime('%Y-%m-%d')
+  invoice.due_date = duedate
 
   # Invoice number
   if args.invoice_number:
@@ -61,7 +55,7 @@ def commandInvoiceAdd(args, session):
   # Reference
   invoice.reference = getReference(invoice.invoice_number, invoice.client_number)
 
-  invoice.time_added = datetime.now()#.strftime('%Y-%m-%d %H:%M:%S')
+  invoice.time_added = datetime.now()
 
   session.add(invoice)
   session.commit()
@@ -69,22 +63,128 @@ def commandInvoiceAdd(args, session):
   print("Invoice created with number " + str(invoice.invoice_number) + ".")
 
 def commandInvoiceRemove(args, session):
-  checkConfiguration(session)
+  invoice = session.query(Invoice).filter_by(invoice_number=args.invoice_number).first()
+  dieIf(not invoice, "Invoice not found by number '"+args.invoice_number+"'.")
+  dieIf(invoice.is_billed, "Cannot remove a billed invoice.")
+
+  session.delete(invoice)
+  session.commit()
 
 def commandInvoiceSet(args, session):
-  checkConfiguration(session)
+  dieIf(not isConfigurationValid(session), 
+    "Cannot execute invoicing commands with incomplete configuration.")
+
+  invoice = findInvoice(session, args)
+
+  dieIf(not hasattr(invoice, args.setting_name), 
+    "Invoice setting '" + args.setting_name + "' does not exist.")
+
+  setattr(invoice, args.setting_name, args.setting_value)
+  session.commit()
 
 def commandInvoiceGet(args, session):
-  checkConfiguration(session)
+  dieIf(not isConfigurationValid(session), 
+    "Cannot execute invoicing commands with incomplete configuration.")
+
+  invoice = findInvoice(session, args)
+
+  dieIf(not hasattr(invoice, args.setting_name), 
+    "Invoice setting '" + args.setting_name + "' does not exist.")
+
+  print(getattr(invoice, args.setting_name))
 
 def commandInvoiceShow(args, session):
-  checkConfiguration(session)
+  dieIf(not isConfigurationValid(session), 
+    "Cannot execute invoicing commands with incomplete configuration.")
+
+  invoice = findInvoice(session, args)
+
+  table = PrettyTable(['Seller info', ''])
+  table.align['Seller info'] = 'r'
+  table.align[''] = 'l'
+
+  table.add_row(['Name', invoice.seller_name])
+  table.add_row(['Address', invoice.seller_address])
+  table.add_row(['ZIP code', invoice.seller_zip_code])
+  table.add_row(['City', invoice.seller_city])
+  if invoice.seller_country:
+    table.add_row(['Country', invoice.seller_country])
+
+  print(table)
+  print('')
+
+  table = PrettyTable(['Client info', ''])
+  table.align['Client info'] = 'r'
+  table.align[''] = 'l'
+
+  table.add_row(['Name', invoice.client_name])
+  table.add_row(['Client number', invoice.client_number])
+  table.add_row(['Address', invoice.client_address])
+  table.add_row(['ZIP code', invoice.client_zip_code])
+  table.add_row(['City', invoice.client_city])
+  if invoice.client_country:
+    table.add_row(['Country', invoice.client_country])
+
+  print(table)
+  print('')
+
+  table = PrettyTable(['Invoice', ''])
+  table.align['Invoice'] = 'r'
+  table.align[''] = 'l'
+
+  table.add_row(['Created', invoice.time_added.strftime('%Y-%m-%d %H:%M:%S')])
+  table.add_row(['Date', invoice.date.strftime('%Y-%m-%d')])
+  table.add_row(['Due date', invoice.due_date.strftime('%Y-%m-%d')])
+  table.add_row(['IBAN', invoice.seller_iban])
+  table.add_row(['Invoice number', invoice.invoice_number])
+  table.add_row(['Reference', invoice.reference])
+  table.add_row(['Is billed', 'Yes' if invoice.is_billed else 'Not billed'])
+
+  print(table)
 
 def commandInvoiceList(args, session):
-  checkConfiguration(session)
+  dieIf(not isConfigurationValid(session), 
+    "Cannot execute invoicing commands with incomplete configuration.")
+  invoices = session.query(Invoice)
+  table = PrettyTable(['Number', 'Date', 'Reference', 'Client', 'Sum'])
+  table.padding_width = 1
+
+  for invoice in invoices:
+    table.add_row([
+      invoice.invoice_number,
+      invoice.date,
+      invoice.reference,
+      invoice.client.name,
+      'TODO',
+    ])
+
+  print(table)
 
 def commandInvoiceBill(args, session):
-  checkConfiguration(session)
+  dieIf(not isConfigurationValid(session), 
+    "Cannot execute invoicing commands with incomplete configuration.")
+
+  invoice = findInvoice(session, args)
+
+  dieIf(invoice.is_billed, 
+    "Invoice " + str(invoice.invoice_number) + " was already billed.")
+
+  invoice.is_billed = True
+  session.commit()
+
+  print ("Marked invoice '" + str(invoice.invoice_number) + "' as billed.")
 
 def commandInvoiceUnbill(args, session):
-  checkConfiguration(session)
+  dieIf(not isConfigurationValid(session), 
+    "Cannot execute invoicing commands with incomplete configuration.")
+
+  invoice = findInvoice(session, args)
+
+  dieIf(not invoice.is_billed, 
+    "Invoice " + str(invoice.invoice_number) + " was not billed.")
+
+  invoice.is_billed = False
+  session.commit()
+
+  print ("Marked invoice '" + str(invoice.invoice_number) + "' as not billed.")
+

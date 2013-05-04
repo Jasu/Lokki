@@ -1,4 +1,5 @@
 from lokki.db.setting import Setting
+import sys
 
 def getValidSettings(): 
   return [
