@@ -1,4 +1,5 @@
 from lokki.db.base import Base
+from sqlalchemy.orm import relationship, backref
 
 from sqlalchemy import Column, Integer, String
 

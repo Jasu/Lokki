@@ -12,6 +12,7 @@ from lokki.commands.init import commandInit
 from lokki.commands.shell import commandShell
 from lokki.commands.config import commandConfigSet, commandConfigGet, commandConfigList
 from lokki.commands.client import commandClientAdd, commandClientRemove, commandClientList, commandClientSet, commandClientGet, commandClientShow
+from lokki.commands.invoice import commandInvoiceAdd, commandInvoiceRemove, commandInvoiceSet, commandInvoiceGet, commandInvoiceShow, commandInvoiceList, commandInvoiceBill, commandInvoiceUnbill
 
 commandLineParser = argparse.ArgumentParser(
                       description='Lokki - command line billing')
@@ -97,6 +98,53 @@ clientShowSubcommandParser.add_argument('handle', help='Client handle')
 clientListSubcommandParser = clientSubcommandSubParsers.add_parser('list')
 clientListSubcommandParser.set_defaults(func=commandClientList)
 
+
+###############################################################################
+# COMMAND invoice                                                             #
+###############################################################################
+
+invoiceSubcommandParser = subcommandParsers.add_parser('invoice')
+invoiceSubcommandSubParsers = invoiceSubcommandParser.add_subparsers(
+                                title='invoice commands')
+
+invoiceAddSubcommandParser = invoiceSubcommandSubParsers.add_parser('add')
+invoiceAddSubcommandParser.set_defaults(func=commandInvoiceAdd)
+invoiceAddSubcommandParser.add_argument('--client_handle', help='Client handle', required=False)
+invoiceAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+invoiceAddSubcommandParser.add_argument('--date', help='Date', required=False)
+invoiceAddSubcommandParser.add_argument('--duedate', help='Due date', required=False)
+invoiceAddSubcommandParser.add_argument('--duedays', help='Days to due from date', required=False)
+
+invoiceRemoveSubcommandParser = invoiceSubcommandSubParsers.add_parser('remove')
+invoiceRemoveSubcommandParser.set_defaults(func=commandInvoiceRemove)
+invoiceRemoveSubcommandParser.add_argument('invoice_number', help='Invoice number')
+
+invoiceSetSubcommandParser = invoiceSubcommandSubParsers.add_parser('set')
+invoiceSetSubcommandParser.set_defaults(func=commandInvoiceSet)
+invoiceSetSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
+invoiceSetSubcommandParser.add_argument('setting_name', help='Setting name')
+invoiceSetSubcommandParser.add_argument('setting_value', help='Setting value')
+
+invoiceGetSubcommandParser = invoiceSubcommandSubParsers.add_parser('get')
+invoiceGetSubcommandParser.set_defaults(func=commandInvoiceGet)
+invoiceGetSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
+invoiceGetSubcommandParser.add_argument('setting_name', help='Setting name')
+
+invoiceShowSubcommandParser = invoiceSubcommandSubParsers.add_parser('show')
+invoiceShowSubcommandParser.set_defaults(func=commandInvoiceShow)
+invoiceShowSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
+
+invoiceListSubcommandParser = invoiceSubcommandSubParsers.add_parser('list')
+invoiceListSubcommandParser.add_argument('--client_handle', help='Client handle', required=False)
+invoiceListSubcommandParser.set_defaults(func=commandInvoiceList)
+
+invoiceBillSubcommandParser = invoiceSubcommandSubParsers.add_parser('bill')
+invoiceBillSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
+invoiceBillSubcommandParser.set_defaults(func=commandInvoiceBill)
+
+invoiceUnillSubcommandParser = invoiceSubcommandSubParsers.add_parser('unbill')
+invoiceUnillSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
+invoiceUnillSubcommandParser.set_defaults(func=commandInvoiceUnbill)
 
 ###############################################################################
 # Connect to database                                                         #
