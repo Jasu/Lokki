@@ -4,8 +4,9 @@ from prettytable import PrettyTable
 from lokki.util import dieIf
 from lokki.db.invoice import Invoice
 from lokki.db.client import Client
+from lokki.db.compositerow import CompositeRow
 from lokki.invoice import *
-from lokki.config import getSetting
+from lokki.config import getSetting, isConfigurationValid
 
 def commandInvoiceAdd(args, session):
   dieIf(not isConfigurationValid(session), 
@@ -140,6 +141,32 @@ def commandInvoiceShow(args, session):
   table.add_row(['Reference', invoice.reference])
   table.add_row(['Is billed', 'Yes' if invoice.is_billed else 'Not billed'])
 
+  print(table)
+
+  table = PrettyTable(['N', 'Item', 'Units', 'Price/unit', 'Total', '*'])
+  table.align['N'] = 'l'
+  table.align['Item'] = 'l'
+  table.align['Units'] = 'l'
+  table.align['Price/unit'] = 'l'
+  table.align['Total'] = 'l'
+  table.align['*'] = 'l'
+
+  for row in invoice.rows:
+    extra = []
+    if row.note:
+      extra.append('note')
+    if isinstance(row, CompositeRow):
+      extra.append('composite')
+    table.add_row([
+      row.index,
+      row.title,
+      row.getNumberOfUnits(),
+      row.getPricePerUnit(),
+      row.getTotal(),
+      ', '.join(extra)
+    ])
+
+  print(' ')
   print(table)
 
 def commandInvoiceList(args, session):

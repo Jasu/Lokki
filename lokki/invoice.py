@@ -10,6 +10,7 @@ def getNextInvoiceNumberAndIncrement(session):
   Does not commit the session, to allow transaction semantics.
   """
   setting = session.query(Setting).filter_by(name='next-invoice-number').first()
+  dieIf(not setting, "Next invoice number is not set.")
   result = setting.value
   setting.value = int(setting.value) + 1
   return result
@@ -70,7 +71,8 @@ def initializeSellerFields(session, invoice):
   invoice.seller_address = configuration['seller-address']
   invoice.seller_zip_code = configuration['seller-zip-code']
   invoice.seller_city = configuration['seller-city']
-  invoice.seller_country = configuration['seller-country']
+  if 'seller-country' in configuration:
+    invoice.seller_country = configuration['seller-country']
   invoice.seller_iban = configuration['seller-iban']
 
 def parseDate(date):

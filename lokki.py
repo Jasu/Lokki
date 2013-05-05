@@ -10,9 +10,39 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from lokki.commands.init import commandInit
 from lokki.commands.shell import commandShell
-from lokki.commands.config import commandConfigSet, commandConfigGet, commandConfigList
-from lokki.commands.client import commandClientAdd, commandClientRemove, commandClientList, commandClientSet, commandClientGet, commandClientShow
-from lokki.commands.invoice import commandInvoiceAdd, commandInvoiceRemove, commandInvoiceSet, commandInvoiceGet, commandInvoiceShow, commandInvoiceList, commandInvoiceBill, commandInvoiceUnbill
+
+from lokki.commands.config import (
+  commandConfigSet, 
+  commandConfigGet, 
+  commandConfigList
+  )
+
+from lokki.commands.client import (
+  commandClientAdd, 
+  commandClientRemove, 
+  commandClientList, 
+  commandClientSet, 
+  commandClientGet, 
+  commandClientShow
+  )
+
+from lokki.commands.invoice import (
+  commandInvoiceAdd, 
+  commandInvoiceRemove, 
+  commandInvoiceSet, 
+  commandInvoiceGet, 
+  commandInvoiceShow, 
+  commandInvoiceList, 
+  commandInvoiceBill, 
+  commandInvoiceUnbill
+  )
+
+from lokki.commands.row import (
+  commandRowAdd, 
+  commandRowRemove, 
+  commandRowSet, 
+  commandRowGet
+  )
 
 commandLineParser = argparse.ArgumentParser(
                       description='Lokki - command line billing')
@@ -142,9 +172,46 @@ invoiceBillSubcommandParser = invoiceSubcommandSubParsers.add_parser('bill')
 invoiceBillSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
 invoiceBillSubcommandParser.set_defaults(func=commandInvoiceBill)
 
-invoiceUnillSubcommandParser = invoiceSubcommandSubParsers.add_parser('unbill')
-invoiceUnillSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
-invoiceUnillSubcommandParser.set_defaults(func=commandInvoiceUnbill)
+invoiceUnbillSubcommandParser = invoiceSubcommandSubParsers.add_parser('unbill')
+invoiceUnbillSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
+invoiceUnbillSubcommandParser.set_defaults(func=commandInvoiceUnbill)
+
+###############################################################################
+# COMMAND row                                                                 #
+###############################################################################
+
+rowSubcommandParser = subcommandParsers.add_parser('row')
+rowSubcommandSubParsers = rowSubcommandParser.add_subparsers(
+                                title='row commands')
+
+rowAddSubcommandParser = rowSubcommandSubParsers.add_parser('add')
+rowAddSubcommandParser.set_defaults(func=commandRowAdd)
+rowAddSubcommandParser.add_argument('title', help='Title')
+rowAddSubcommandParser.add_argument('price_per_unit', help='Price per unit')
+rowAddSubcommandParser.add_argument('num_units', help='Number of units', nargs='?')
+rowAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+rowAddSubcommandParser.add_argument('--vat', help='VAT, eg. "22%" or "0.22".', required=False)
+rowAddSubcommandParser.add_argument('--note', help='A descriptive longer note to display on the invoice.', required=False)
+rowAddSubcommandParser.add_argument('--external_source', help='When importing from an external system, an identification string of the system.', required=False)
+rowAddSubcommandParser.add_argument('--external_id', help='When importing from an external system, ID of the row in the other system', required=False)
+
+rowRemoveSubcommandParser = rowSubcommandSubParsers.add_parser('remove')
+rowRemoveSubcommandParser.set_defaults(func=commandRowRemove)
+rowRemoveSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+rowRemoveSubcommandParser.add_argument('index', help='Row index')
+
+rowSetSubcommandParser = rowSubcommandSubParsers.add_parser('set')
+rowSetSubcommandParser.set_defaults(func=commandRowSet)
+rowSetSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+rowSetSubcommandParser.add_argument('index', help='Row index')
+rowSetSubcommandParser.add_argument('setting_name', help='Setting name')
+rowSetSubcommandParser.add_argument('setting_value', help='Setting value')
+
+rowGetSubcommandParser = rowSubcommandSubParsers.add_parser('get')
+rowGetSubcommandParser.set_defaults(func=commandRowGet)
+rowGetSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+rowGetSubcommandParser.add_argument('index', help='Row index')
+rowGetSubcommandParser.add_argument('setting_name', help='Setting name')
 
 ###############################################################################
 # Connect to database                                                         #

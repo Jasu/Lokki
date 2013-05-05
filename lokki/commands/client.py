@@ -7,20 +7,23 @@ def commandClientAdd(args, session):
   client = Client()
   client.handle = args.handle
 
-  if ('name' in args and args.client_number != 'null'):
+  if 'name' in args and args.name:
     client.name = args.name
-  if ('address' in args and args.client_number != 'null'):
+  if 'address' in args and args.address:
     client.address = args.address
-  if ('zip_code' in args and args.client_number != 'null'):
+  if 'zip_code' in args and args.zip_code:
     client.zip_code = args.zip_code
-  if ('city' in args and args.client_number != 'null'):
+  if 'city' in args and args.city:
     client.city = args.city
-  if ('country' in args and args.client_number != 'null'):
+  if 'country' in args and args.country:
     client.country = args.country
-  if ('client_number' in args and args.client_number != 'null'):
-      clientByNumber = session.query(Client).filter_by(client_number=args.client_number).first()
-      dieIf(clientByNumber, "Client already exists by client number '" + args.client_number + "'.")
-      client.client_number = args.client_number
+  if 'client_number' in args and args.client_number:
+    clientByNumber = (session.query(Client)
+                        .filter_by(client_number=args.client_number)
+                        .first())
+    dieIf(clientByNumber, 
+      "Client already exists by client number '" + args.client_number + "'.")
+    client.client_number = args.client_number
 
   session.add(client)
   session.commit()
