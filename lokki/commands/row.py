@@ -5,16 +5,8 @@ Commands for managing simple invoice rows.
 from lokki.db.simplerow import SimpleRow
 from lokki.invoice import findInvoice
 from lokki.util import dieIf
-from lokki.row import getNextRowIndex, findRow
+from lokki.row import getNextRowIndex, findRow, beginRowCommand
 from lokki.config import getSetting, isConfigurationValid
-
-def beginRowCommand(args, session, readonly=False):
-  dieIf(not isConfigurationValid(session), 
-    "Cannot execute row commands with incomplete configuration.")
-  invoice = findInvoice(session, args)
-  dieIf(not readonly and invoice.is_billed, 
-    "Cannot execute row commands on a billed invoice.")
-  return invoice
 
 def commandRowAdd(args, session):
   invoice = beginRowCommand(args, session)

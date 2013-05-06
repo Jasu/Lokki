@@ -1,6 +1,8 @@
 
 from lokki.db.base import Base
 
+from lokki.util import dieIf
+
 from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship, backref
 

@@ -44,6 +44,19 @@ from lokki.commands.row import (
   commandRowGet
   )
 
+from lokki.commands.composite import (
+  commandCompositeAdd, 
+  commandCompositeRemove, 
+  commandCompositeShow
+  )
+
+from lokki.commands.subrow import (
+  commandSubrowAdd, 
+  commandSubrowRemove, 
+  commandSubrowSet, 
+  commandSubrowGet
+  )
+
 commandLineParser = argparse.ArgumentParser(
                       description='Lokki - command line billing')
 
@@ -212,6 +225,78 @@ rowGetSubcommandParser.set_defaults(func=commandRowGet)
 rowGetSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
 rowGetSubcommandParser.add_argument('index', help='Row index')
 rowGetSubcommandParser.add_argument('setting_name', help='Setting name')
+
+###############################################################################
+# COMMAND composite                                                           #
+###############################################################################
+
+compositeSubcommandParser = subcommandParsers.add_parser('composite')
+compositeSubcommandSubParsers = compositeSubcommandParser.add_subparsers(
+                                title='composite row commands')
+
+compositeAddSubcommandParser = compositeSubcommandSubParsers.add_parser('add')
+compositeAddSubcommandParser.set_defaults(func=commandCompositeAdd)
+compositeAddSubcommandParser.add_argument('title', help='Title')
+compositeAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+compositeAddSubcommandParser.add_argument('--vat', help='VAT, eg. "22%" or "0.22".', required=False)
+compositeAddSubcommandParser.add_argument('--note', help='A descriptive longer note to display on the invoice.', required=False)
+compositeAddSubcommandParser.add_argument('--external_source', help='When importing from an external system, an identification string of the system.', required=False)
+compositeAddSubcommandParser.add_argument('--external_id', help='When importing from an external system, ID of the composite row in the other system', required=False)
+
+compositeRemoveSubcommandParser = compositeSubcommandSubParsers.add_parser('remove')
+compositeRemoveSubcommandParser.set_defaults(func=commandCompositeRemove)
+compositeRemoveSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+compositeRemoveSubcommandParser.add_argument('index', help='Composite index')
+
+compositeShowSubcommandParser = compositeSubcommandSubParsers.add_parser('show')
+compositeShowSubcommandParser.set_defaults(func=commandCompositeShow)
+compositeShowSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+compositeShowSubcommandParser.add_argument('index', help='Composite index')
+
+###############################################################################
+# COMMAND subrow                                                              #
+###############################################################################
+
+subrowSubcommandParser = subcommandParsers.add_parser('subrow')
+subrowSubcommandSubParsers = subrowSubcommandParser.add_subparsers(
+                                title='subrow commands')
+
+subrowAddSubcommandParser = subrowSubcommandSubParsers.add_parser('add')
+subrowAddSubcommandParser.set_defaults(func=commandSubrowAdd)
+subrowAddSubcommandParser.add_argument('title', help='Title')
+subrowAddSubcommandParser.add_argument('price_per_unit', help='Price per unit')
+subrowAddSubcommandParser.add_argument('num_units', help='Number of units', nargs='?')
+subrowAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+subrowAddSubcommandParser.add_argument('--row_index', help='Composite row index', required=False)
+subrowAddSubcommandParser.add_argument('--vat', help='VAT, eg. "22%" or "0.22".', required=False)
+subrowAddSubcommandParser.add_argument('--note', help='A descriptive longer note to display on the invoice.', required=False)
+subrowAddSubcommandParser.add_argument('--external_source', help='When importing from an external system, an identification string of the system.', required=False)
+subrowAddSubcommandParser.add_argument('--external_id', help='When importing from an external system, ID of the subrow in the other system', required=False)
+
+subrowRemoveSubcommandParser = subrowSubcommandSubParsers.add_parser('remove')
+subrowRemoveSubcommandParser.set_defaults(func=commandSubrowRemove)
+subrowRemoveSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+subrowRemoveSubcommandParser.add_argument('--row_index', help='Composite row index', required=False)
+subrowRemoveSubcommandParser.add_argument('--vat', help='VAT, eg. "22%" or "0.22".', required=False)
+subrowRemoveSubcommandParser.add_argument('--note', help='A descriptive longer note to display on the invoice.', required=False)
+subrowRemoveSubcommandParser.add_argument('--external_source', help='When importing from an external system, an identification string of the system.', required=False)
+subrowRemoveSubcommandParser.add_argument('--external_id', help='When importing from an external system, ID of the subrow in the other system', required=False)
+subrowRemoveSubcommandParser.add_argument('subrow_index', help='Subrow index', nargs='?')
+
+subrowSetSubcommandParser = subrowSubcommandSubParsers.add_parser('set')
+subrowSetSubcommandParser.set_defaults(func=commandSubrowSet)
+subrowSetSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+subrowSetSubcommandParser.add_argument('--row_number', help='Composite row number', required=False)
+subrowSetSubcommandParser.add_argument('index', help='Subrow index', nargs='?')
+subrowSetSubcommandParser.add_argument('setting_name', help='Setting name')
+subrowSetSubcommandParser.add_argument('setting_value', help='Setting value')
+
+subrowGetSubcommandParser = subrowSubcommandSubParsers.add_parser('get')
+subrowGetSubcommandParser.set_defaults(func=commandSubrowGet)
+subrowGetSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+subrowGetSubcommandParser.add_argument('--row_number', help='Composite row number', required=False)
+subrowGetSubcommandParser.add_argument('index', help='Subrow index', nargs='?')
+subrowGetSubcommandParser.add_argument('setting_name', help='Setting name')
 
 ###############################################################################
 # Connect to database                                                         #

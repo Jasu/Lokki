@@ -10,6 +10,7 @@ Command line billing.
 
   *  **SQLAclhemy:** sudo pip install SQLAlchemy
   *  **prettytable:** sudo pip install prettytable
+  *  **Pystache** sudo pip install pystache
 
 ## Usage
 
@@ -175,7 +176,7 @@ Command line billing.
   Unbilling marks the bill as unbilled, but does not generate a new bill to
   void it.
 
-### Managing invoice rows
+### Managing simple invoice rows
     
   All row commands target the latest non-billed invoice unless invoice number 
   is specified.
@@ -192,6 +193,46 @@ Command line billing.
     
     lk row remove \[--invoice-number 1\] row-index
 
+#### Setting row settings
+
+    lk row set \[--invoice-number 1\] row-index setting-name setting-value
+
+#### Getting row settings
+
+    lk row get \[--invoice-number 1\] row-index setting-name
+
+### Managing composite invoice rows
+    
+  All composite commands target the latest non-billed invoice unless invoice number 
+  is specified.
+
+  Invoices that are billed cannot be edited.
+
+#### Adding a composite row
+
+    lk composite add \[--invoice-number 1\] \[--vat 22%\] title
+
+#### Removing a composite row
+    
+    lk composite remove \[--invoice-number 1\] row-index
+
+#### Adding a composite subrow
+
+    lk composite sub \[--invoice-number 1\] \[--row-index\] title unit_price \[number_of_units\]
+
+  number\_of\_units is 1 by default.
+
+#### Removing a composite subrow
+
+    lk composite subremove \[--invoice-number 1\] row-index
+
+#### Setting composite row settings
+
+    lk composite set \[--invoice-number 1\] row-index setting-name setting-value
+
+#### Getting composite row settings
+
+    lk composite get \[--invoice-number 1\] row-index setting-name
 
 ### Managing event handlers
 

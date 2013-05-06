@@ -166,7 +166,7 @@ def commandInvoiceShow(args, session):
       ', '.join(extra)
     ])
 
-  print(' ')
+  print('')
   print(table)
 
 def commandInvoiceList(args, session):
