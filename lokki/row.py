@@ -12,12 +12,12 @@ def findRow(args, invoice, session, type=SimpleRow):
   index = None
   if 'index' in args and args.index:
     index = args.index
-  elif 'row_index' in args and args.row_index:
-    index = args.row_index
+  elif 'row' in args and args.row:
+    index = args.row
   if index:
-    dieIf(int(args.index) > len(invoice.rows), 'Row index is too large.')
-    dieIf(int(args.index) < 1, 'Row index below one.')
-    row = invoice.rows[int(args.index) - 1]
+    dieIf(int(index) > len(invoice.rows), 'Row index is too large.')
+    dieIf(int(index) < 1, 'Row index below one.')
+    row = invoice.rows[int(index) - 1]
   else:
     row = invoice.rows[-1]
   dieIf(not isinstance(row, type), 'Selected row is not a simple row.')
