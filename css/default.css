@@ -1,0 +1,208 @@
+* 
+{
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  font-size: 0.3cm;
+  padding: 1cm;
+}
+
+h1 {
+  font-size: 0.5cm;
+}
+
+h2 {
+  font-size: 0.3cm;
+}
+
+table 
+{
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+
+dl
+{
+  overflow: hidden;
+}
+dt, dd
+{
+  display: block;
+  float: left;
+}
+dt {
+  clear: left;
+  font-weight: bold;
+  text-align: right;
+  padding-right: 3mm;
+}
+
+#content
+{
+  min-height: 17cm;
+  margin: 0;
+  padding: 0;
+}
+
+#header
+{
+  margin: 0.5cm 0;
+  overflow: hidden;
+}
+
+#header #details,
+#header #client {
+  width: 7cm;
+  float: left;
+}
+
+#client span {
+  display: block;
+}
+#client .zip_code {
+  float: left;
+  margin-right: 0.3em;
+}
+
+#details dt {
+  width: 4cm;
+}
+
+#rows {
+  width: 17cm;
+  margin: 0.2cm 0 0.4cm 0;
+  border: 0.6mm solid black;
+}
+#rows td, #rows th {
+  padding: 0.5mm 1mm 0.6mm 1mm;
+  border: 0.3mm solid black;
+}
+#rows .header-row th {
+  border-bottom: 0.4mm solid black;
+  text-align: left;
+}
+#rows td.title {
+  text-align: left;
+  width: 7.5cm;
+}
+#rows td.price_per_unit,
+#rows td.total,
+#rows td.vat,
+#rows td.total_with_vat,
+#rows td.num_units {
+  text-align: right;
+}
+#rows .tally-row td, #rows .tally-row th{
+  padding-top: 1mm;
+  text-align: right;
+  border: none;
+}
+#rows .tally-row .grand_total {
+  font-weight: bold;
+}
+
+
+#seller {
+  width: 17cm;
+  margin-bottom: 0.5cm;
+}
+#seller dt {
+  clear: none;
+  width: 2.5cm;
+}
+#seller dd {
+  width: 5cm;
+}
+
+hr {
+  margin: 5mm 0;
+  border: 0.4mm solid black;
+}
+
+#banktransfer {
+  width: 17cm;
+}
+#banktransfer th {
+  text-align: right;
+}
+#banktransfer th, #banktransfer td {
+  border: 0.7mm none black;
+  padding: 1mm;
+  vertical-align: top;
+}
+#banktransfer th.account {
+  height: 1cm;
+  width: 3cm;
+  border-style: none solid solid none;
+}
+#banktransfer td.account {
+  border-style: none solid solid solid;
+}
+#banktransfer td.account .bic {
+  margin-left: 3mm;
+}
+#banktransfer td.account .iban {
+  display: block;
+}
+#banktransfer td.blank {
+  width: 5cm;
+  border-style: none none solid solid;
+  height: 4cm;
+}
+#banktransfer th.payer {
+  border-style: solid solid none none;
+}
+#banktransfer th.signature {
+  border-style: none solid none none;
+  height: 0.5cm;
+}
+#banktransfer th.signature_below {
+  border-style: none solid solid none;
+  height: 0.2cm;
+}
+#banktransfer th.recipient,
+#banktransfer th.from-iban {
+  border-style: solid solid solid none;
+}
+#banktransfer td.payer {
+  border-style:  solid solid none solid;
+  height: 1cm;
+}
+#banktransfer td.signature {
+  border-style: none solid none solid;
+}
+#banktransfer td.signature_below {
+  border-style: none solid solid solid;
+}
+#banktransfer .signature-line
+{
+  border-bottom: 0.5mm solid black;
+  margin: 5mm 1mm 0 1mm;
+}
+#banktransfer td.recipient,
+#banktransfer td.from-iban {
+  border-style: solid;
+}
+#banktransfer td.recipient {
+  text-align: center;
+  vertical-align: middle;
+  height: 0.7cm;
+}
+#banktransfer th.reference {
+  border-style: solid;
+}
+#banktransfer td.reference {
+  border-style: solid none solid solid;
+}
+#banktransfer td.due_date,
+#banktransfer th.due_date,
+#banktransfer th.total {
+  border-style: solid;
+}
+#banktransfer td.total {
+  border-style: solid none solid solid;
+}

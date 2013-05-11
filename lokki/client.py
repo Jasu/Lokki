@@ -14,19 +14,25 @@ def getClientFields():
     'client_number',
     'name',
     'address',
+    'address_2',
     'zip_code',
     'city',
     'country',
+    'company_number',
+    'vat_number',
   ]
 
 def getClientFieldTitle(key):
   return {
-    'id'            : 'Id',
-    'handle'        : 'Handle',
+    'id' : 'Id',
+    'handle' : 'Handle',
     'client_number' : 'Client number',
-    'name'          : 'Name',
-    'address'       : 'Street address',
-    'zip_code'      : 'ZIP code',
-    'city'          : 'City',
-    'country'       : 'Country',
+    'name' : 'Name',
+    'address' : 'Street address',
+    'address_2' : 'Street address, cont.',
+    'zip_code' : 'ZIP code',
+    'city' : 'City',
+    'country' : 'Country',
+    'company_number': 'Local company number',
+    'vat_number': 'European VAT number',
   }[key]

@@ -43,26 +43,36 @@ Command line billing.
 
 #### Available settings
 
-##### sender-name
-  **Required.** Sender name, displayed in invoices. 
+##### seller-name
+  **Required.** Seller name, displayed in invoices. 
 
-##### sender-address
-  **Required.** Sender street address, displayed in invoices.
+##### seller-address
+  **Required.** Seller street address, displayed in invoices.
 
-##### sender-zip-code
-  **Required.** Sender ZIP code, displayed in invoices.
+##### seller-address-2
+  Second row of the street address.
 
-##### sender-city
-  **Required.** Sender city, displayed in invoices.
+##### seller-zip-code
+  **Required.** Seller ZIP code, displayed in invoices.
 
-##### sender-iban
-  **Required.** Sender IBAN, displayed in invoices.
+##### seller-city
+  **Required.** Seller city, displayed in invoices.
 
-##### sender-country
-  Sender country, displayed in invoices.
+##### seller-iban
+  **Required.** Seller IBAN, displayed in invoices.
+
+##### seller-company-number
+  **Required.** Seller local company number, displayed in invoices.
+
+##### seller-vat-number
+  Seller VAT number, displayed in invoices.
+
+##### seller-country
+  Seller country, displayed in invoices.
 
 ##### next-invoice-number
-  Number of the invoice.
+  Number of the next invoice. Incremented every time an invoice 
+  is created.
 
 ##### default-due-days
   Default number of days from the generation of the bill.
@@ -73,7 +83,10 @@ Command line billing.
 ##### default-vat
   Percentage of default VAT to add.
 
-##### bill-filename-template
+##### invoice-template-path
+  Path to the template for the invoice
+
+##### invoice-filename-template
   Template of the bill filename. Available tokens: 
 ###### {{d}} 
   Two-digit day of the month
@@ -83,12 +96,14 @@ Command line billing.
   Four-digit year
 ###### {{n}} 
   Number of the invoice
+###### {{invoice.x}} 
+  Invoice parameters.
 
 ### Managing clients
 
 #### Adding client
 
-    lk client add handle \[name\] \[address\] \[zip-code\] \[city\] \[country\]
+    lk client add handle 
 
   Client may be added incomplete, but it may not be used until all required
   settings are set.
@@ -161,7 +176,7 @@ Command line billing.
  
 #### Generating invoice HTML
 
-    lk invoice generate \[--invoice-number 1\] \[--filename output.html\]
+    lk invoice generate  \[--filename output.html\] \[--template template.html\] \[invoice-number\]
 
   If filename is omitted, a filename is generated using the default template.
 
@@ -275,4 +290,8 @@ Command line billing.
 
   The database path argument is passed automatically. Other arguments must
   be specified on the command line.
+
+## TODO
+
+  *  Increment the invoice number only when setting as billed.
 

@@ -26,9 +26,13 @@ class Invoice(Base):
 
   seller_name = Column(String(255), nullable=False)
   seller_address = Column(String(255), nullable=False)
+  seller_address_2 = Column(String(255))
   seller_zip_code = Column(String(255), nullable=False)
   seller_city = Column(String(255), nullable=False)
   seller_country = Column(String(255))
+  seller_phone_number = Column(String(255))
+  seller_company_number = Column(String(255))
+  seller_vat_number = Column(String(255))
   seller_iban = Column(String(255), nullable=False)
 
   # Client data, copied from client, to make the bull look the same if it is
@@ -37,6 +41,7 @@ class Invoice(Base):
   client_name = Column(String(127), nullable=False)
   client_number = Column(Integer, nullable=False)
   client_address = Column(String(127), nullable=False)
+  client_address_2 = Column(String(127))
   client_zip_code = Column(String(15), nullable=False)
   client_city = Column(String(63), nullable=False)
   client_country = Column(String(63))

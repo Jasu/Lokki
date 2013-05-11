@@ -5,6 +5,7 @@ import sys
 import argparse
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
+from pprint import pprint
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -34,7 +35,8 @@ from lokki.commands.invoice import (
   commandInvoiceShow, 
   commandInvoiceList, 
   commandInvoiceBill, 
-  commandInvoiceUnbill
+  commandInvoiceUnbill,
+  commandInvoiceGenerate
   )
 
 from lokki.commands.row import (
@@ -112,12 +114,33 @@ clientSubcommandSubParsers = clientSubcommandParser.add_subparsers(
 clientAddSubcommandParser = clientSubcommandSubParsers.add_parser('add')
 clientAddSubcommandParser.set_defaults(func=commandClientAdd)
 clientAddSubcommandParser.add_argument('handle', help='Client handle')
-clientAddSubcommandParser.add_argument('name', help='Name', nargs='?')
-clientAddSubcommandParser.add_argument('address', help='Street address', nargs='?')
-clientAddSubcommandParser.add_argument('zip_code', help='ZIP code', nargs='?')
-clientAddSubcommandParser.add_argument('city', help='City', nargs='?')
-clientAddSubcommandParser.add_argument('country', help='Country', nargs='?')
-clientAddSubcommandParser.add_argument('client_number', help='Client number', nargs='?')
+clientAddSubcommandParser.add_argument('--name', 
+                                       help='Name', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--address', 
+                                       help='Street address', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--address_2', 
+                                       help='Street address, second line', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--zip_code', 
+                                       help='ZIP code', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--city', 
+                                       help='City', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--country', 
+                                       help='Country', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--client_number', 
+                                       help='Client number', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--company_number', 
+                                       help='Local company number', 
+                                       required=False)
+clientAddSubcommandParser.add_argument('--vat_number', 
+                                       help='European VAT number', 
+                                       required=False)
 
 clientRemoveSubcommandParser = clientSubcommandSubParsers.add_parser('remove')
 clientRemoveSubcommandParser.set_defaults(func=commandClientRemove)
@@ -188,6 +211,19 @@ invoiceBillSubcommandParser.set_defaults(func=commandInvoiceBill)
 invoiceUnbillSubcommandParser = invoiceSubcommandSubParsers.add_parser('unbill')
 invoiceUnbillSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
 invoiceUnbillSubcommandParser.set_defaults(func=commandInvoiceUnbill)
+
+invoiceGenerateSubcommandParser = (
+  invoiceSubcommandSubParsers.add_parser('generate'))
+invoiceGenerateSubcommandParser.add_argument('--filename', 
+                                             help='Output file', 
+                                             required=False)
+invoiceGenerateSubcommandParser.add_argument('--template', 
+                                             help='Template file', 
+                                             required=False)
+invoiceGenerateSubcommandParser.add_argument('invoice_number', 
+                                             help='Invoice number', 
+                                             nargs='?')
+invoiceGenerateSubcommandParser.set_defaults(func=commandInvoiceGenerate)
 
 ###############################################################################
 # COMMAND row                                                                 #
@@ -311,6 +347,8 @@ if 'LK_DB_PATH' in os.environ:
 ###############################################################################
 # Invoke the command                                                          #
 ###############################################################################
+
+
 
 arguments = commandLineParser.parse_args()
 if ('func' in arguments):

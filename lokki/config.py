@@ -4,15 +4,23 @@ import sys
 def getValidSettings(): 
   return [
     'seller-name',
+    'seller-vat-number',
+    'seller-company-number',
     'seller-address',
+    'seller-address-2',
     'seller-zip-code',
     'seller-city',
     'seller-country',
+    'seller-phone-number',
     'seller-iban',
+    'seller-bank',
+    'seller-bic',
     'next-invoice-number',
     'default-due-days',
     'default-client',
     'default-vat',
+    'default-invoice-template',
+    'invoice-filename-template'
   ]
 
 def getRequiredSettings(): 
@@ -21,7 +29,11 @@ def getRequiredSettings():
     'seller-address',
     'seller-zip-code',
     'seller-city',
+    'seller-phone-number',
+    'seller-company-number',
     'seller-iban',
+    'seller-bank',
+    'seller-bic',
   ]
 
 def getConfiguration(session):

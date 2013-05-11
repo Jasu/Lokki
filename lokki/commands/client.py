@@ -11,12 +11,18 @@ def commandClientAdd(args, session):
     client.name = args.name
   if 'address' in args and args.address:
     client.address = args.address
+  if 'address_2' in args and args.address_2:
+    client.address_2 = args.address_2
   if 'zip_code' in args and args.zip_code:
     client.zip_code = args.zip_code
   if 'city' in args and args.city:
     client.city = args.city
   if 'country' in args and args.country:
     client.country = args.country
+  if 'company_number' in args and args.company_number:
+    client.company_number = args.company_number
+  if 'vat_number' in args and args.vat_number:
+    client.vat_number = args.vat_number
   if 'client_number' in args and args.client_number:
     clientByNumber = (session.query(Client)
                         .filter_by(client_number=args.client_number)

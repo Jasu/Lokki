@@ -1,4 +1,5 @@
 import sys
+from decimal import Decimal
 
 def dieIf(condition, msg):
   if condition:
@@ -6,3 +7,8 @@ def dieIf(condition, msg):
     sys.stderr.write("Nothing done.\n")
     sys.exit(1)
 
+
+def formatNumber(number):
+  if isinstance(number, str):
+    number = Decimal(number)
+  return str(number.quantize(Decimal('.01'))).replace('.', ',')

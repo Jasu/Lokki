@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
-from prettytable import PrettyTable
+from decimal import Decimal
 
-from lokki.util import dieIf
+from prettytable import PrettyTable
+import pystache
+
+from lokki.util import dieIf, formatNumber
 from lokki.db.invoice import Invoice
 from lokki.db.client import Client
 from lokki.db.compositerow import CompositeRow
@@ -214,4 +217,58 @@ def commandInvoiceUnbill(args, session):
   session.commit()
 
   print ("Marked invoice '" + str(invoice.invoice_number) + "' as not billed.")
+
+def commandInvoiceGenerate(args, session):
+  if args.template:
+    template = args.template
+  else:
+    template = getSetting(session, 'default-invoice-template')
+
+  dieIf(not template, 
+        'No --template provided and default-invoice-template not set.')
+
+  invoice = findInvoice(session, args)
+
+  with open(template, 'r') as template:
+    templateString = template.read()
+
+  rows = []
+  total = 0
+  total_vat = 0
+  for row in invoice.rows:
+    rows.append({
+      'title': row.title,
+      'price_per_unit': formatNumber(row.getPricePerUnit()),
+      'num_units': formatNumber(row.getNumberOfUnits()),
+      'vat': formatNumber(row.vat),
+      'vat_percentage': formatNumber(Decimal(row.vat) * 100),
+      'total': formatNumber(Decimal(row.getTotal())),
+      'total_with_vat': formatNumber(row.getTotal() * (1 + Decimal(row.vat))),
+    })
+    total += row.getTotal()
+    total_vat += row.getTotal() * Decimal(row.vat)
+  renderedInvoice = pystache.render(templateString, {
+    'rows': rows,
+    'invoice': invoice,
+    'due_days': (invoice.due_date - invoice.date).days,
+    'total': formatNumber(total),
+    'total_vat': formatNumber(total_vat),
+    'total_with_vat': formatNumber(total + total_vat),
+    'currency':'€',
+  })
+
+  if args.filename: 
+    targetPath = args.filename
+  else:
+    targetFilenameTemplate = getSetting(session, 'invoice-filename-template')
+    targetPath = pystache.render(targetFilenameTemplate, {
+      'invoice': invoice,
+      'n': invoice.invoice_number,
+      'd': datetime.today().day,
+      'm': datetime.today().month,
+      'y': datetime.today().year,
+    })
+
+  with open(targetPath, 'w') as output:
+    output.write(renderedInvoice)
 

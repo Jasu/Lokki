@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+    <link rel="stylesheet" type="text/css" href="css/default.css">
+    <title>
+      Lasku 
+      - {{invoice.client_name}} 
+      - {{invoice.date}} 
+      - {{invoice.invoice_number}}
+    </title>
+  </head>
+  <body>
+    <div id="content">
+      <h1>Lasku - {{invoice.seller_name}}</h1>
+
+      <div id="header">
+        <div id="client">
+          <h2>Ostaja</h2>
+          <span class="name">{{invoice.client_name}}</span>
+          <span class="address">{{invoice.client_address}}</span>
+          {{#invoice.client_address_2}}
+            <span class="address">{{client_address_2}}</span>
+          {{/invoice.client_address_2}}
+          <span class="zip_code">{{invoice.client_zip_code}}</span>
+          <span class="city">{{invoice.client_city}}</span>
+          {{#invoice.client_country}}
+            <span class="country">{{client_country}}</span>
+          {{/invoice.client_country}}
+        </div>
+
+        <div id="details">
+          <dl>
+            <dt class="date">Päiväys</dt>
+            <dd class="date">{{invoice.date}}</dd>
+            <dt class="duedate">Eräpäivä</dt>
+            <dd class="duedate">{{invoice.due_date}}</dd>
+            <dt class="reference">Viitenumero</dt>
+            <dd class="reference">{{invoice.reference}}</dd>
+            <dt class="invoice_number">Laskun numero</dt>
+            <dd class="invoice_number">{{invoice.invoice_number}}</dd>
+            <dt class="due_days">Laskun ehdot</dt>
+            <dd class="due_days">{{due_days}} pv netto</dd>
+            <dt class="client_number">Asiakasnumero</dt>
+            <dd class="client_number">{{invoice.client_number}}</dd>
+          </dl>
+        </div>
+      </div>
+
+      <h2>Laskuerittely</h2>
+      <table id="rows">
+        <tr class="header-row">
+          <th class="title">Nimeke</th>
+          <th class="price_per_unit">á-hinta</th>
+          <th class="num_units">Määrä</th>
+          <th class="total">Hinta (&euro;)</th>
+          <th class="vat">ALV-kanta</th>
+          <th class="total_with_vat">Hinta veroineen</th>
+        </tr>
+        {{#rows}}
+          <tr>
+            <td class="title">{{title}}</td>
+            <td class="price_per_unit">{{price_per_unit}} {{currency}}</td>
+            <td class="num_units">{{num_units}}</td>
+            <td class="total">{{total}} {{currency}}</td>
+            <td class="vat">{{vat_percentage}} %</td>
+            <td class="total_with_vat">{{total_with_vat}} {{currency}}</td>
+          </tr>
+          {{#note}}
+            <tr>
+              <td colspan="6" class="note">{{note}}</td>
+            </tr>
+          {{/note}}
+        {{/rows}}
+        <tr class="tally-row">
+          <th colspan="3">Yhteensä (veroton):</td>
+          <td>{{total}} {{currency}}</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="tally-row">
+          <th colspan="3">Veron määrä:</td>
+          <td>{{total_vat}} {{currency}}</td>
+          <th>Veroineen:</th>
+          <td class="grand_total">{{total_with_vat}} {{currency}}</td>
+        </tr>
+      </table>
+
+      <h2>Myyjä</h2>
+      <div id="seller">
+        <dl>
+          <dt>Yritys</dt>
+          <dd>{{invoice.seller_name}}</dd>
+          <dt>Y-tunnus</dt>
+          <dd>{{invoice.seller_company_number}}</dd>
+          <dt>Puhelinnumero</dt>
+          <dd>{{invoice.seller_phone_number}}</dd>
+          <dt class="address">Postiosoite</dt>
+          <dd class="address">
+            <span class="address">{{invoice.seller_address}}</span>
+            {{#invoice.seller_address2}}
+              <span class="address_2">{{invoice.seller_address_2}}</span>
+            {{/invoice.seller_address2}}
+            <span class="zip">{{invoice.seller_zip_code}}</span>
+            <span class="city">{{invoice.seller_city}}</span>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <hr/>
+
+    <h2>Tilisiirto</h2>
+    <table id="banktransfer">
+      <tr>
+        <th class="account">Saajan tilinumero</th>
+        <td class="account">
+          <span class="bank">Pankki {{invoice.seller_bank}}</span>
+          <span class="bic">BIC {{invoice.seller_bic}}</span>
+          <span class="iban">Tilinumero {{invoice.seller_iban}}</span>
+        </td>
+        <td class="blank" rowspan="4" colspan="4">Tilisiirto</td>
+      </tr>
+      <tr>
+        <th class="recipient">Saaja</th>
+        <td class="recipient">{{invoice.seller_name}}</td>
+      </tr>
+      <tr>
+        <th class="payer">Maksaja</th>
+        <td class="payer"></td>
+      </tr>
+      <tr>
+        <th class="signature">Allekirjoitus</th>
+        <td class="signature"><div class="signature-line"></div></td>
+      </tr>
+      <tr>
+        <th class="signature_below"></th>
+        <td class="signature_below"></td>
+        <th class="reference">Viitenumero</th>
+        <td class="reference">{{invoice.reference}}</td>
+      </tr>
+      <tr>
+        <th rowspan="2" class="from-iban">Tililtä nro</th>
+        <td rowspan="2" class="from-iban"></td>
+        <th class="due_date">Eräpäivä</th>
+        <td class="due_date">{{invoice.due_date}}</td>
+        <th class="total">EUR</th>
+        <td class="total">{{total_with_vat}}</td>
+      </tr>
+    </table>
+  </body>
+</html>
