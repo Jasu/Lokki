@@ -204,6 +204,8 @@ def commandInvoiceBill(args, session):
   invoice.is_billed = True
   session.commit()
 
+  triggerEvent(session, 'bill', _getTemplateArguments(invoice))
+
   print ("Marked invoice '" + str(invoice.invoice_number) + "' as billed.")
 
 def commandInvoiceUnbill(args, session):
@@ -218,22 +220,11 @@ def commandInvoiceUnbill(args, session):
   invoice.is_billed = False
   session.commit()
 
+  triggerEvent(session, 'unbill', _getTemplateArguments(invoice))
+
   print ("Marked invoice '" + str(invoice.invoice_number) + "' as not billed.")
 
-def commandInvoiceGenerate(args, session):
-  if args.template:
-    template = args.template
-  else:
-    template = getSetting(session, 'default-invoice-template')
-
-  dieIf(not template, 
-        'No --template provided and default-invoice-template not set.')
-
-  invoice = findInvoice(session, args)
-
-  with open(template, 'r') as template:
-    templateString = template.read()
-
+def _getTemplateArguments(invoice):
   rows = []
   composite_rows = []
 
@@ -270,8 +261,7 @@ def commandInvoiceGenerate(args, session):
     total += row.getTotal()
     total_vat += row.getTotal() * Decimal(row.vat)
 
-  templateArguments = {
-    'show_details': not args.hide_details and len(composite_rows),
+  return {
     'rows': rows,
     'composite_rows': composite_rows, 
     'invoice': invoice,
@@ -285,6 +275,25 @@ def commandInvoiceGenerate(args, session):
     'total_with_vat': formatNumber(total + total_vat),
     'currency':'€',
   }
+
+
+def commandInvoiceGenerate(args, session):
+  if args.template:
+    template = args.template
+  else:
+    template = getSetting(session, 'default-invoice-template')
+
+  dieIf(not template, 
+        'No --template provided and default-invoice-template not set.')
+
+  invoice = findInvoice(session, args)
+
+  templateArguments = _getTemplateArguments(invoice)
+  templateArguments['show_details'] = (not args.hide_details 
+                                      and len(templateArguments['composite_rows']))
+
+  with open(template, 'r') as template:
+    templateString = template.read()
 
   renderedInvoice = pystache.render(templateString, templateArguments)
 
