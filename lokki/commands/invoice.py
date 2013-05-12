@@ -235,23 +235,45 @@ def commandInvoiceGenerate(args, session):
     templateString = template.read()
 
   rows = []
+  composite_rows = []
+
   total = Decimal(0)
   total_vat = Decimal(0)
   for row in invoice.rows:
-    rows.append({
+    rowData = {
       'title': row.title,
-      'price_per_unit': formatNumber(row.getPricePerUnit()),
       'num_units': formatNumber(row.getNumberOfUnits()),
       'vat': formatNumber(row.vat),
       'vat_percentage': formatNumber(Decimal(row.vat) * 100),
       'total': formatNumber(Decimal(row.getTotal())),
       'total_with_vat': formatNumber(row.getTotal() * (1 + Decimal(row.vat))),
-    })
+    }
+    if row.getPricePerUnit(): 
+      rowData['price_per_unit'] = formatNumber(row.getPricePerUnit()),
+    if isinstance(row, CompositeRow):
+      rowData['subrows'] = []
+      for subrow in row.subrows:
+        row_total = Decimal(subrow.num_units) * Decimal(subrow.price_per_unit)
+        rowData['subrows'].append({
+          'title': subrow.title,
+          'price_per_unit': formatNumber(subrow.price_per_unit),
+          'num_units': formatNumber(subrow.num_units),
+          'vat': formatNumber(row.vat),
+          'vat_percentage': formatNumber(Decimal(row.vat) * 100),
+          'total': formatNumber(row_total),
+          'total_with_vat': formatNumber(row_total * (1 + Decimal(row.vat))),
+        })
+      composite_rows.append(rowData)
+
+    rows.append(rowData)
+
     total += row.getTotal()
     total_vat += row.getTotal() * Decimal(row.vat)
 
   templateArguments = {
+    'show_details': not args.hide_details and len(composite_rows),
     'rows': rows,
+    'composite_rows': composite_rows, 
     'invoice': invoice,
     'n': '%05d' % invoice.invoice_number,
     'd': '%02d' % datetime.today().day,

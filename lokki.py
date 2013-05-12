@@ -228,6 +228,10 @@ invoiceGenerateSubcommandParser.add_argument('--filename',
 invoiceGenerateSubcommandParser.add_argument('--template', 
                                              help='Template file', 
                                              required=False)
+invoiceGenerateSubcommandParser.add_argument('--hide-details', 
+                                             help='If set, hides the composite'
+                                                  ' row details', 
+                                             action='store_true')
 invoiceGenerateSubcommandParser.add_argument('invoice_number', 
                                              help='Invoice number', 
                                              nargs='?')

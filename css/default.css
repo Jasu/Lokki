@@ -72,36 +72,36 @@ dt {
   width: 4cm;
 }
 
-#rows {
+.rows {
   width: 17cm;
-  margin: 0.2cm 0 0.4cm 0;
   border: 0.6mm solid black;
+  margin: 0.2cm 0 0.4cm 0;
 }
-#rows td, #rows th {
+.rows td, .rows th {
   padding: 0.5mm 1mm 0.6mm 1mm;
   border: 0.3mm solid black;
 }
-#rows .header-row th {
+.rows .header-row th {
   border-bottom: 0.4mm solid black;
   text-align: left;
 }
-#rows td.title {
+.rows td.title {
   text-align: left;
   width: 7.5cm;
 }
-#rows td.price_per_unit,
-#rows td.total,
-#rows td.vat,
-#rows td.total_with_vat,
-#rows td.num_units {
+.rows td.price_per_unit,
+.rows td.total,
+.rows td.vat,
+.rows td.total_with_vat,
+.rows td.num_units {
   text-align: right;
 }
-#rows .tally-row td, #rows .tally-row th{
+.rows .tally-row td, .rows .tally-row th{
   padding-top: 1mm;
   text-align: right;
   border: none;
 }
-#rows .tally-row .grand_total {
+.rows .tally-row .grand_total {
   font-weight: bold;
 }
 
@@ -125,6 +125,7 @@ hr {
 
 #banktransfer {
   width: 17cm;
+  page-break-after: always;
 }
 #banktransfer th {
   text-align: right;

@@ -48,7 +48,7 @@
       </div>
 
       <h2>Laskuerittely</h2>
-      <table id="rows">
+      <table id="rows" class="rows">
         <tr class="header-row">
           <th class="title">Nimeke</th>
           <th class="price_per_unit">á-hinta</th>
@@ -148,5 +148,44 @@
         <td class="total">{{total_with_vat}}</td>
       </tr>
     </table>
+
+    {{#show_details}}
+      <h1>Laskurivien erittely</h1>
+      {{#composite_rows}}
+        <h2>{{title}}</h2>
+        <table class="composite_details rows">
+          <tr>
+            <th class="title">Nimeke</th>
+            <th class="price_per_unit">á-hinta</th>
+            <th class="num_units">Määrä</th>
+            <th class="total">Hinta</th>
+            <th class="vat">ALV-kanta</th>
+            <th class="total_with_vat">Hinta veroineen</th>
+          </tr>
+          {{#subrows}}
+            <tr>
+              <td class="title">{{title}}</th>
+              <td class="price_per_unit">{{price_per_unit}} {{currency}}</th>
+              <td class="num_units">{{num_units}}</th>
+              <td class="total">{{total}} {{currency}}</th>
+              <td class="vat">{{vat_percentage}}</th>
+              <td class="total_with_vat">{{total_with_vat}} {{currency}}</th>
+            </tr>
+          {{/subrows}}
+          <tr class="tally-row">
+            <th colspan="3">Yhteensä (veroton):</td>
+            <td>{{total}} {{currency}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr class="tally-row">
+            <th colspan="3">Veron määrä:</td>
+            <td>{{total_vat}} {{currency}}</td>
+            <th>Veroineen:</th>
+            <td class="grand_total">{{total_with_vat}} {{currency}}</td>
+          </tr>
+        </table>
+      {{/composite_rows}}
+    {{/show_details}}
   </body>
 </html>
