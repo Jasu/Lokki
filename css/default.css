@@ -125,7 +125,6 @@ hr {
 
 #banktransfer {
   width: 17cm;
-  page-break-after: always;
 }
 #banktransfer th {
   text-align: right;
@@ -206,4 +205,7 @@ hr {
 }
 #banktransfer td.total {
   border-style: solid none solid solid;
+}
+#page2 {
+  page-break-before: always;
 }
