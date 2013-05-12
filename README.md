@@ -256,19 +256,11 @@ Command line billing.
 
 #### Available events
 
-  *  **on_bill** Triggered when an invoice is billed. Arguments: 
-    1.  Database path
-    2.  Invoice number 
+  *  **bill** Triggered when an invoice is billed. Arguments: 
 
-  *  **on_unbill** Triggered when an invoice is unbilled. Arguments:
-    1.  Database path
-    2.  Invoice number
+  *  **unbill** Triggered when an invoice is unbilled. Arguments:
 
-  *  **on_generate** Triggered when an invoice HTML has been generated. 
-     Arguments:
-    1.  Database path
-    2.  Invoice number
-    3.  Generated file path (absolute)
+  *  **generate** Triggered when an invoice HTML has been generated. 
 
 #### Adding event handlers
 
@@ -276,20 +268,26 @@ Command line billing.
 
 #### Removing event handlers
 
-    lk event remove id
+    lk event remove [--id id] [--event event --index index]
 
-  Index is the number of the event handler displayed by lk event list.
+  Index is the number of the event handler displayed in lk event list.
+
+#### Setting event handler values
+
+    lk event set [--id id] [--event event --index index] setting_name 
+      setting_value
+
+  Index is the number of the event handler displayed in lk event list.
+
+#### Getting event handler values
+
+    lk event get [--id id] [--event event --index index] setting_name 
+
+  Index is the number of the event handler displayed in lk event list.
 
 #### Listing event handlers
     
     lk event list \[event-name\]
-
-#### Triggering an event
-
-    lk event trigger event-name \[--invoice-number\] [[arg1] ...]
-
-  The database path argument is passed automatically. Other arguments must
-  be specified on the command line.
 
 ## TODO
 
