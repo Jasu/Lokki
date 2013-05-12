@@ -59,6 +59,14 @@ from lokki.commands.subrow import (
   commandSubrowGet
   )
 
+from lokki.commands.event import (
+  commandEventAdd, 
+  commandEventRemove, 
+  commandEventSet, 
+  commandEventGet,
+  commandEventList
+  )
+
 commandLineParser = argparse.ArgumentParser(
                       description='Lokki - command line billing')
 
@@ -334,6 +342,63 @@ subrowGetSubcommandParser.add_argument('--row_number', help='Composite row numbe
 subrowGetSubcommandParser.add_argument('index', help='Subrow index', nargs='?')
 subrowGetSubcommandParser.add_argument('setting_name', help='Setting name')
 
+###############################################################################
+# COMMAND event                                                               #
+###############################################################################
+
+eventSubcommandParser = subcommandParsers.add_parser('event')
+eventSubcommandSubParsers = eventSubcommandParser.add_subparsers(
+                                title='event commands')
+
+eventAddSubcommandParser = eventSubcommandSubParsers.add_parser('add')
+eventAddSubcommandParser.set_defaults(func=commandEventAdd)
+eventAddSubcommandParser.add_argument('event', help='Event name')
+eventAddSubcommandParser.add_argument('command', help='Command')
+
+eventRemoveSubcommandParser = eventSubcommandSubParsers.add_parser('remove')
+eventRemoveSubcommandParser.set_defaults(func=commandEventRemove)
+eventRemoveSubcommandParser.add_argument('--event', 
+                                         help='Event name', 
+                                         nargs='?')
+eventRemoveSubcommandParser.add_argument('--index', 
+                                         help='Event index', 
+                                         nargs='?')
+eventRemoveSubcommandParser.add_argument('--id', 
+                                         help='Event id', 
+                                         nargs='?')
+
+eventSetSubcommandParser = eventSubcommandSubParsers.add_parser('set')
+eventSetSubcommandParser.set_defaults(func=commandEventSet)
+eventSetSubcommandParser.add_argument('--event', 
+                                      help='Event name', 
+                                      nargs='?')
+eventSetSubcommandParser.add_argument('--index', 
+                                      help='Event index', 
+                                      nargs='?')
+eventSetSubcommandParser.add_argument('--id', 
+                                      help='Event id', 
+                                      nargs='?')
+eventSetSubcommandParser.add_argument('setting_name', help='Setting name')
+eventSetSubcommandParser.add_argument('setting_value', help='Setting value')
+
+eventGetSubcommandParser = eventSubcommandSubParsers.add_parser('get')
+eventGetSubcommandParser.set_defaults(func=commandEventGet)
+eventGetSubcommandParser.add_argument('--event', 
+                                      help='Event name', 
+                                      nargs='?')
+eventGetSubcommandParser.add_argument('--index', 
+                                      help='Event index', 
+                                      nargs='?')
+eventGetSubcommandParser.add_argument('--id', 
+                                      help='Event id', 
+                                      nargs='?')
+eventGetSubcommandParser.add_argument('setting_name', help='Setting name')
+
+eventListSubcommandParser = eventSubcommandSubParsers.add_parser('list')
+eventListSubcommandParser.set_defaults(func=commandEventList)
+eventListSubcommandParser.add_argument('--event', 
+                                       help='Event name', 
+                                       nargs='?')
 ###############################################################################
 # Connect to database                                                         #
 ###############################################################################

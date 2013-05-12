@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
+import os
 
 from prettytable import PrettyTable
 import pystache
@@ -10,6 +11,7 @@ from lokki.db.client import Client
 from lokki.db.compositerow import CompositeRow
 from lokki.invoice import *
 from lokki.config import getSetting, isConfigurationValid
+from lokki.event import triggerEvent
 
 def commandInvoiceAdd(args, session):
   dieIf(not isConfigurationValid(session), 
@@ -233,8 +235,8 @@ def commandInvoiceGenerate(args, session):
     templateString = template.read()
 
   rows = []
-  total = 0
-  total_vat = 0
+  total = Decimal(0)
+  total_vat = Decimal(0)
   for row in invoice.rows:
     rows.append({
       'title': row.title,
@@ -247,28 +249,38 @@ def commandInvoiceGenerate(args, session):
     })
     total += row.getTotal()
     total_vat += row.getTotal() * Decimal(row.vat)
-  renderedInvoice = pystache.render(templateString, {
+
+  templateArguments = {
     'rows': rows,
     'invoice': invoice,
+    'n': '%05d' % invoice.invoice_number,
+    'd': '%02d' % datetime.today().day,
+    'm': '%02d' % datetime.today().month,
+    'y': '%04d' % datetime.today().year,
     'due_days': (invoice.due_date - invoice.date).days,
     'total': formatNumber(total),
     'total_vat': formatNumber(total_vat),
     'total_with_vat': formatNumber(total + total_vat),
     'currency':'€',
-  })
+  }
+
+  renderedInvoice = pystache.render(templateString, templateArguments)
 
   if args.filename: 
     targetPath = args.filename
   else:
     targetFilenameTemplate = getSetting(session, 'invoice-filename-template')
-    targetPath = pystache.render(targetFilenameTemplate, {
-      'invoice': invoice,
-      'n': invoice.invoice_number,
-      'd': datetime.today().day,
-      'm': datetime.today().month,
-      'y': datetime.today().year,
-    })
+    targetPath = pystache.render(targetFilenameTemplate, templateArguments)
+
+  targetPath = os.path.normpath(targetPath)
+
+  templateArguments['output_path'] = targetPath
+  templateArguments['output_basename'] = os.path.basename(targetPath)
+  (templateArguments['output_path_no_ext'], 
+   templateArguments['output_path_ext']) = os.path.splitext(targetPath)
 
   with open(targetPath, 'w') as output:
     output.write(renderedInvoice)
+
+  triggerEvent(session, 'generate', templateArguments)
 
