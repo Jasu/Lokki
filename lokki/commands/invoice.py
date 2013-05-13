@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 import os
+import json
 
 from prettytable import PrettyTable
 import pystache
@@ -66,7 +67,10 @@ def commandInvoiceAdd(args, session):
   session.add(invoice)
   session.commit()
 
-  print("Invoice created with number " + str(invoice.invoice_number) + ".")
+  if args.json:
+    _jsonPrintInvoice(invoice)
+  else:
+    print("Invoice created with number " + str(invoice.invoice_number) + ".")
 
 def commandInvoiceRemove(args, session):
   invoice = session.query(Invoice).filter_by(invoice_number=args.invoice_number).first()
@@ -105,74 +109,85 @@ def commandInvoiceShow(args, session):
 
   invoice = findInvoice(session, args)
 
-  table = PrettyTable(['Seller info', ''])
-  table.align['Seller info'] = 'r'
-  table.align[''] = 'l'
+  if args.json:
+    _jsonPrintInvoice(invoice)
+  else:
+    table = PrettyTable(['Seller info', ''])
+    table.align['Seller info'] = 'r'
+    table.align[''] = 'l'
 
-  table.add_row(['Name', invoice.seller_name])
-  table.add_row(['Address', invoice.seller_address])
-  table.add_row(['ZIP code', invoice.seller_zip_code])
-  table.add_row(['City', invoice.seller_city])
-  if invoice.seller_country:
-    table.add_row(['Country', invoice.seller_country])
+    table.add_row(['Name', invoice.seller_name])
+    table.add_row(['Address', invoice.seller_address])
+    table.add_row(['ZIP code', invoice.seller_zip_code])
+    table.add_row(['City', invoice.seller_city])
+    if invoice.seller_country:
+      table.add_row(['Country', invoice.seller_country])
+    if invoice.seller_company_number:
+      table.add_row(['Company number', invoice.seller_company_number])
+    if invoice.seller_vat_number:
+      table.add_row(['VAT number', invoice.seller_vat_number])
 
-  print(table)
-  print('')
+    print(table)
+    print('')
 
-  table = PrettyTable(['Client info', ''])
-  table.align['Client info'] = 'r'
-  table.align[''] = 'l'
+    table = PrettyTable(['Client info', ''])
+    table.align['Client info'] = 'r'
+    table.align[''] = 'l'
 
-  table.add_row(['Name', invoice.client_name])
-  table.add_row(['Client number', invoice.client_number])
-  table.add_row(['Address', invoice.client_address])
-  table.add_row(['ZIP code', invoice.client_zip_code])
-  table.add_row(['City', invoice.client_city])
-  if invoice.client_country:
-    table.add_row(['Country', invoice.client_country])
+    table.add_row(['Name', invoice.client_name])
+    table.add_row(['Client number', invoice.client_number])
+    table.add_row(['Address', invoice.client_address])
+    table.add_row(['ZIP code', invoice.client_zip_code])
+    table.add_row(['City', invoice.client_city])
+    if invoice.client_country:
+      table.add_row(['Country', invoice.client_country])
+    if invoice.client_company_number:
+      table.add_row(['Company number', invoice.client_company_number])
+    if invoice.client_vat_number:
+      table.add_row(['VAT number', invoice.client_vat_number])
 
-  print(table)
-  print('')
+    print(table)
+    print('')
 
-  table = PrettyTable(['Invoice', ''])
-  table.align['Invoice'] = 'r'
-  table.align[''] = 'l'
+    table = PrettyTable(['Invoice', ''])
+    table.align['Invoice'] = 'r'
+    table.align[''] = 'l'
 
-  table.add_row(['Created', invoice.time_added.strftime('%Y-%m-%d %H:%M:%S')])
-  table.add_row(['Date', invoice.date.strftime('%Y-%m-%d')])
-  table.add_row(['Due date', invoice.due_date.strftime('%Y-%m-%d')])
-  table.add_row(['IBAN', invoice.seller_iban])
-  table.add_row(['Invoice number', invoice.invoice_number])
-  table.add_row(['Reference', invoice.reference])
-  table.add_row(['Is billed', 'Yes' if invoice.is_billed else 'Not billed'])
+    table.add_row(['Created', invoice.time_added.strftime('%Y-%m-%d %H:%M:%S')])
+    table.add_row(['Date', invoice.date.strftime('%Y-%m-%d')])
+    table.add_row(['Due date', invoice.due_date.strftime('%Y-%m-%d')])
+    table.add_row(['IBAN', invoice.seller_iban])
+    table.add_row(['Invoice number', invoice.invoice_number])
+    table.add_row(['Reference', invoice.reference])
+    table.add_row(['Is billed', 'Yes' if invoice.is_billed else 'Not billed'])
 
-  print(table)
+    print(table)
 
-  table = PrettyTable(['N', 'Item', 'Units', 'Price/unit', 'Total', '*'])
-  table.align['N'] = 'l'
-  table.align['Item'] = 'l'
-  table.align['Units'] = 'l'
-  table.align['Price/unit'] = 'l'
-  table.align['Total'] = 'l'
-  table.align['*'] = 'l'
+    table = PrettyTable(['N', 'Item', 'Units', 'Price/unit', 'Total', '*'])
+    table.align['N'] = 'l'
+    table.align['Item'] = 'l'
+    table.align['Units'] = 'l'
+    table.align['Price/unit'] = 'l'
+    table.align['Total'] = 'l'
+    table.align['*'] = 'l'
 
-  for row in invoice.rows:
-    extra = []
-    if row.note:
-      extra.append('note')
-    if isinstance(row, CompositeRow):
-      extra.append('composite')
-    table.add_row([
-      row.index,
-      row.title,
-      row.getNumberOfUnits(),
-      row.getPricePerUnit(),
-      row.getTotal(),
-      ', '.join(extra)
-    ])
+    for row in invoice.rows:
+      extra = []
+      if row.note:
+        extra.append('note')
+      if isinstance(row, CompositeRow):
+        extra.append('composite')
+      table.add_row([
+        row.index,
+        row.title,
+        row.getNumberOfUnits(),
+        row.getPricePerUnit(),
+        row.getTotal(),
+        ', '.join(extra)
+      ])
 
-  print('')
-  print(table)
+    print('')
+    print(table)
 
 def commandInvoiceList(args, session):
   dieIf(not isConfigurationValid(session), 
@@ -315,3 +330,59 @@ def commandInvoiceGenerate(args, session):
 
   triggerEvent(session, 'generate', templateArguments)
 
+def _jsonPrintInvoice(invoice): 
+  rows = []
+  for row in invoice.rows:
+    rowTable = {
+      'title': row.title,
+      'type:': row.type,
+      'index': row.index,
+      'vat': row.vat,
+      'total': float(row.getTotal()),
+      'price_per_unit': float(row.getPricePerUnit()) if row.getPricePerUnit() else None,
+      'num_units': float(row.getNumberOfUnits()) if row.getNumberOfUnits() else None,
+    }
+    if isinstance(row, CompositeRow):
+      rowTable['subrows'] = []
+      for subrow in row.subrows:
+        rowTable['subrows'].append({
+          'title': subrow.title,
+          'price_per_unit': float(subrow.price_per_unit),
+          'num_units': float(subrow.num_units),
+          'total': float(Decimal(subrow.num_units) * Decimal(subrow.price_per_unit)),
+        })
+    rows.append(rowTable)
+  print(json.dumps({
+    'invoice': {
+      'id': invoice.id,
+      'invoice_number': invoice.invoice_number,
+      'time_added': invoice.time_added.isoformat(),
+      'date': invoice.date.isoformat(),
+      'due_date': invoice.due_date.isoformat(),
+      'reference': invoice.reference,
+      'is_billed': invoice.is_billed,
+      'client_id': invoice.client_id,
+
+      'seller_name': invoice.seller_name,
+      'seller_address': invoice.seller_address,
+      'seller_address_2': invoice.seller_address_2,
+      'seller_zip_code': invoice.seller_zip_code,
+      'seller_city': invoice.seller_city,
+      'seller_country': invoice.seller_country,
+      'seller_phone_number': invoice.seller_phone_number,
+      'seller_company_number': invoice.seller_company_number,
+      'seller_vat_number': invoice.seller_vat_number,
+      'seller_iban': invoice.seller_iban,
+
+      'client_name': invoice.client_name,
+      'client_number': invoice.client_number,
+      'client_address': invoice.client_address,
+      'client_address_2': invoice.client_address_2,
+      'client_zip_code': invoice.client_zip_code,
+      'client_city': invoice.client_city,
+      'client_country': invoice.client_country,
+      'client_company_number': invoice.client_company_number,
+      'client_vat_number': invoice.client_vat_number,
+    }
+  }))
+  

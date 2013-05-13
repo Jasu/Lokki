@@ -67,6 +67,11 @@ from lokki.commands.event import (
   commandEventList
   )
 
+from lokki.commands.external import (
+  commandExternalRows,
+  commandExternalSubrows
+  )
+
 commandLineParser = argparse.ArgumentParser(
                       description='Lokki - command line billing')
 
@@ -185,6 +190,7 @@ invoiceAddSubcommandParser = invoiceSubcommandSubParsers.add_parser('add')
 invoiceAddSubcommandParser.set_defaults(func=commandInvoiceAdd)
 invoiceAddSubcommandParser.add_argument('--client_handle', help='Client handle', required=False)
 invoiceAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+invoiceAddSubcommandParser.add_argument('--json', help='As output, print the invoice as json.', required=False, action='store_true')
 invoiceAddSubcommandParser.add_argument('--date', help='Date', required=False)
 invoiceAddSubcommandParser.add_argument('--duedate', help='Due date', required=False)
 invoiceAddSubcommandParser.add_argument('--duedays', help='Days to due from date', required=False)
@@ -206,6 +212,7 @@ invoiceGetSubcommandParser.add_argument('setting_name', help='Setting name')
 
 invoiceShowSubcommandParser = invoiceSubcommandSubParsers.add_parser('show')
 invoiceShowSubcommandParser.set_defaults(func=commandInvoiceShow)
+invoiceShowSubcommandParser.add_argument('--json', help='As output, print the invoice as json.', required=False, action='store_true')
 invoiceShowSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
 
 invoiceListSubcommandParser = invoiceSubcommandSubParsers.add_parser('list')
@@ -250,6 +257,7 @@ rowAddSubcommandParser.set_defaults(func=commandRowAdd)
 rowAddSubcommandParser.add_argument('title', help='Title')
 rowAddSubcommandParser.add_argument('price_per_unit', help='Price per unit')
 rowAddSubcommandParser.add_argument('num_units', help='Number of units', nargs='?')
+rowAddSubcommandParser.add_argument('--json', help='As output, display the row in JSON.', required=False, action='store_true')
 rowAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
 rowAddSubcommandParser.add_argument('--vat', help='VAT, eg. "22%" or "0.22".', required=False)
 rowAddSubcommandParser.add_argument('--note', help='A descriptive longer note to display on the invoice.', required=False)
@@ -285,6 +293,7 @@ compositeSubcommandSubParsers = compositeSubcommandParser.add_subparsers(
 compositeAddSubcommandParser = compositeSubcommandSubParsers.add_parser('add')
 compositeAddSubcommandParser.set_defaults(func=commandCompositeAdd)
 compositeAddSubcommandParser.add_argument('title', help='Title')
+compositeAddSubcommandParser.add_argument('--json', help='As output, display the row in JSON.', required=False, action='store_true')
 compositeAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
 compositeAddSubcommandParser.add_argument('--vat', help='VAT, eg. "22%" or "0.22".', required=False)
 compositeAddSubcommandParser.add_argument('--note', help='A descriptive longer note to display on the invoice.', required=False)
@@ -316,7 +325,6 @@ subrowAddSubcommandParser.add_argument('price_per_unit', help='Price per unit')
 subrowAddSubcommandParser.add_argument('num_units', help='Number of units', nargs='?')
 subrowAddSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
 subrowAddSubcommandParser.add_argument('--row', help='Composite row index', required=False)
-subrowAddSubcommandParser.add_argument('--vat', help='VAT, eg. "22%" or "0.22".', required=False)
 subrowAddSubcommandParser.add_argument('--note', help='A descriptive longer note to display on the invoice.', required=False)
 subrowAddSubcommandParser.add_argument('--external_source', help='When importing from an external system, an identification string of the system.', required=False)
 subrowAddSubcommandParser.add_argument('--external_id', help='When importing from an external system, ID of the subrow in the other system', required=False)
@@ -403,6 +411,25 @@ eventListSubcommandParser.set_defaults(func=commandEventList)
 eventListSubcommandParser.add_argument('--event', 
                                        help='Event name', 
                                        nargs='?')
+
+###############################################################################
+# COMMAND external                                                            #
+###############################################################################
+
+externalSubcommandParser = subcommandParsers.add_parser('external')
+externalSubcommandSubParsers = externalSubcommandParser.add_subparsers(
+                                title='external (interfacing) commands')
+
+externalRowsSubcommandParser = externalSubcommandSubParsers.add_parser('rows')
+externalRowsSubcommandParser.set_defaults(func=commandExternalRows)
+externalRowsSubcommandParser.add_argument('--json', help='As output, display the row map in JSON.', required=False, action='store_true')
+externalRowsSubcommandParser.add_argument('--external_source', help='Filter by a specific source.', required=False)
+
+externalSubrowsSubcommandParser = externalSubcommandSubParsers.add_parser('subrows')
+externalSubrowsSubcommandParser.set_defaults(func=commandExternalSubrows)
+externalSubrowsSubcommandParser.add_argument('--json', help='As output, display the subrow map in JSON.', required=False, action='store_true')
+externalSubrowsSubcommandParser.add_argument('--external_source', help='Filter by a specific source.', required=False)
+
 ###############################################################################
 # Connect to database                                                         #
 ###############################################################################

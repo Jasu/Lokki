@@ -6,7 +6,7 @@ from lokki.db.compositerow import CompositeRow
 from lokki.db.subrow import Subrow
 from lokki.invoice import findInvoice
 from lokki.util import dieIf
-from lokki.row import getNextRowIndex, findRow, beginRowCommand
+from lokki.row import getNextRowIndex, findRow, beginRowCommand, jsonPrintRow
 from lokki.compositerow import findSubrow
 from lokki.config import getSetting
 from prettytable import PrettyTable
@@ -33,7 +33,10 @@ def commandCompositeAdd(args, session):
   session.add(row)
   session.commit()
 
-  print("Added row '" + str(row.index) + "'.")
+  if args.json:
+    jsonPrintRow(row)
+  else:
+    print("Added row '" + str(row.index) + "'.")
 
 def commandCompositeRemove(args, session):
   invoice = beginRowCommand(args, session)

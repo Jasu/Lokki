@@ -5,7 +5,7 @@ Commands for managing simple invoice rows.
 from lokki.db.simplerow import SimpleRow
 from lokki.invoice import findInvoice
 from lokki.util import dieIf
-from lokki.row import getNextRowIndex, findRow, beginRowCommand
+from lokki.row import getNextRowIndex, findRow, beginRowCommand, jsonPrintRow
 from lokki.config import getSetting, isConfigurationValid
 
 def commandRowAdd(args, session):
@@ -31,7 +31,10 @@ def commandRowAdd(args, session):
 
   session.commit()
 
-  print("Added row '" + str(row.index) + "'.")
+  if args.json:
+    jsonPrintRow(row)
+  else:
+    print("Added row '" + str(row.index) + "'.")
 
 def commandRowRemove(args, session):
   invoice = beginRowCommand(args, session)
@@ -61,3 +64,5 @@ def commandRowGet(args, session):
   dieIf(not hasattr(row, args.setting_name), 
     "Setting '" + args.setting_name + "' does not exist.")
   print(getattr(row, args.setting_name))
+
+

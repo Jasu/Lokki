@@ -45,4 +45,6 @@ class Invoice(Base):
   client_zip_code = Column(String(15), nullable=False)
   client_city = Column(String(63), nullable=False)
   client_country = Column(String(63))
+  client_company_number = Column(String(63))
+  client_vat_number = Column(String(63))
 

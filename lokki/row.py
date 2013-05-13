@@ -1,9 +1,12 @@
+import sys
+import json
 from pprint import pprint
+
 from lokki.util import dieIf
 from lokki.invoice import findInvoice
 from lokki.config import isConfigurationValid
 from lokki.db.simplerow import SimpleRow
-import sys
+from lokki.db.compositerow import CompositeRow
 
 def getNextRowIndex(invoice):
   return len(invoice.rows) + 1
@@ -31,3 +34,23 @@ def beginRowCommand(args, session, readonly=False):
     "Cannot execute row commands on a billed invoice.")
   return invoice
 
+def jsonPrintRow(row):
+  rowTable = {
+    'title': row.title,
+    'index': row.index,
+    'type:': row.type,
+    'vat': row.vat,
+    'total': float(row.getTotal()),
+    'price_per_unit': float(row.getPricePerUnit()) if row.getPricePerUnit() else None,
+    'num_units': float(row.getNumberOfUnits()) if row.getNumberOfUnits() else None,
+  }
+  if isinstance(row, CompositeRow):
+    rowTable['subrows'] = []
+    for subrow in row.subrows:
+      rowTable['subrows'].append({
+        'title': subrow.title,
+        'price_per_unit': float(subrow.price_per_unit),
+        'num_units': float(subrow.num_units),
+        'total': float(Decimal(subrow.num_units) * Decimal(price_per_unit))
+      })
+  print(json.dumps(rowTable))
