@@ -3,6 +3,7 @@ Commands for managing simple invoice rows.
 """
 
 from lokki.db.simplerow import SimpleRow
+from lokki.db.row import Row
 from lokki.invoice import findInvoice
 from lokki.util import dieIf
 from lokki.row import getNextRowIndex, findRow, beginRowCommand, jsonPrintRow
@@ -25,6 +26,13 @@ def commandRowAdd(args, session):
     row.external_source = args.external_source
   if args.external_id:
     row.external_id = args.external_id
+
+  if args.external_source and args.external_id:
+    query = (session.query(Row)
+             .filter_by(external_source=args.external_source)
+             .filter_by(external_id=args.external_id))
+    dieIf(query.first(), 'External id already exists.')
+
   row.num_units = args.num_units
   row.price_per_unit = args.price_per_unit
   session.add(row)

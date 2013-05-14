@@ -21,6 +21,11 @@ def commandSubrowAdd(args, session):
     subrow.external_source = args.external_source
   if args.external_id:
     subrow.external_id = args.external_id
+  if args.external_source and args.external_id:
+    query = (session.query(Subrow)
+             .filter_by(external_source=args.external_source)
+             .filter_by(external_id=args.external_id))
+    dieIf(query.first(), 'External id already exists.')
 
   session.add(subrow)
   session.commit()

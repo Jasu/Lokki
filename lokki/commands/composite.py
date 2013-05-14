@@ -4,6 +4,7 @@ Commands to manipulate composite rows.
 
 from lokki.db.compositerow import CompositeRow
 from lokki.db.subrow import Subrow
+from lokki.db.row import Row
 from lokki.invoice import findInvoice
 from lokki.util import dieIf
 from lokki.row import getNextRowIndex, findRow, beginRowCommand, jsonPrintRow
@@ -29,6 +30,12 @@ def commandCompositeAdd(args, session):
     row.external_source = args.external_source
   if args.external_id:
     row.external_id = args.external_id
+
+  if args.external_source and args.external_id:
+    query = (session.query(Row)
+             .filter_by(external_source=args.external_source)
+             .filter_by(external_id=args.external_id))
+    dieIf(query.first(), 'External id already exists.')
   
   session.add(row)
   session.commit()
