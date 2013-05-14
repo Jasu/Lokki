@@ -7,10 +7,10 @@ import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 from lokki.commands.init import commandInit
 from lokki.commands.shell import commandShell
+
+lokki_dir = os.path.dirname(os.path.abspath(__file__))
 
 from lokki.commands.config import (
   commandConfigSet, 

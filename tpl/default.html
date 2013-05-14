@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf8">
-    <link rel="stylesheet" type="text/css" href="css/default.css">
+    <link rel="stylesheet" type="text/css" href="{{lokki_dir}}/css/default.css">
     <title>
       Lasku 
       - {{invoice.client_name}} 
@@ -25,8 +25,9 @@
           <span class="zip_code">{{invoice.client_zip_code}}</span>
           <span class="city">{{invoice.client_city}}</span>
           {{#invoice.client_country}}
-            <span class="country">{{client_country}}</span>
+            <span class="country">{{invoice.client_country}}</span>
           {{/invoice.client_country}}
+          <span class="company_number">{{invoice.client_company_number}}</span>
         </div>
 
         <div id="details">

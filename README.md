@@ -61,6 +61,12 @@ Command line billing.
 ##### seller-iban
   **Required.** Seller IBAN, displayed in invoices.
 
+##### seller-bank
+  **Required.** Seller bank name, displayed in invoices.
+
+##### seller-bic
+  **Required.** Seller bank BIC, displayed in invoices.
+
 ##### seller-company-number
   **Required.** Seller local company number, displayed in invoices.
 

@@ -1,4 +1,6 @@
 import sys
+from datetime import datetime
+
 from lokki.db.setting import Setting
 from lokki.db.invoice import Invoice
 from lokki.config import isConfigurationValid, getConfiguration

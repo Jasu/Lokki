@@ -255,7 +255,7 @@ def _getTemplateArguments(invoice):
       'total_with_vat': formatNumber(row.getTotal() * (1 + Decimal(row.vat))),
     }
     if row.getPricePerUnit(): 
-      rowData['price_per_unit'] = formatNumber(row.getPricePerUnit()),
+      rowData['price_per_unit'] = formatNumber(row.getPricePerUnit())
     if isinstance(row, CompositeRow):
       rowData['subrows'] = []
       for subrow in row.subrows:
@@ -276,6 +276,10 @@ def _getTemplateArguments(invoice):
     total += row.getTotal()
     total_vat += row.getTotal() * Decimal(row.vat)
 
+  lokki_dir = os.path.dirname(
+      os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
+
   return {
     'rows': rows,
     'composite_rows': composite_rows, 
@@ -284,6 +288,13 @@ def _getTemplateArguments(invoice):
     'd': '%02d' % datetime.today().day,
     'm': '%02d' % datetime.today().month,
     'y': '%04d' % datetime.today().year,
+
+    'invoice_d': '%02d' % invoice.date.day,
+    'invoice_m': '%02d' % invoice.date.month,
+    'invoice_y': '%04d' % invoice.date.year,
+
+    'lokki_dir': lokki_dir,
+
     'due_days': (invoice.due_date - invoice.date).days,
     'total': formatNumber(total),
     'total_vat': formatNumber(total_vat),
@@ -297,6 +308,10 @@ def commandInvoiceGenerate(args, session):
     template = args.template
   else:
     template = getSetting(session, 'default-invoice-template')
+    lokki_dir = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+      )
+    template = lokki_dir + '/' + template
 
   dieIf(not template, 
         'No --template provided and default-invoice-template not set.')
