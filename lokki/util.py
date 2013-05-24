@@ -1,5 +1,5 @@
 import sys
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 def dieIf(condition, msg):
   if condition:
@@ -11,4 +11,5 @@ def dieIf(condition, msg):
 def formatNumber(number):
   if isinstance(number, str):
     number = Decimal(number)
-  return str(number.quantize(Decimal('.01'))).replace('.', ',')
+  return str(number.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)).replace('.', ',')
+
