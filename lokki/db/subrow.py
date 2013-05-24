@@ -21,5 +21,5 @@ class Subrow(Base):
   price_per_unit = Column(String(31), nullable=False)
 
   row_id = Column(Integer, ForeignKey('composite_rows.id'), nullable=False)
-  row = relationship('CompositeRow', backref=backref('subrows', order_by=index))
+  row = relationship('CompositeRow', backref=backref('subrows', order_by=index, cascade="all,delete"))
 

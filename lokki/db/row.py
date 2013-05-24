@@ -22,7 +22,7 @@ class Row(Base):
   external_id = Column(String(255), nullable=True)
 
   invoice_id = Column(Integer, ForeignKey('invoices.id'), nullable=False)
-  invoice = relationship('Invoice', backref=backref('rows', order_by=index))
+  invoice = relationship('Invoice', backref=backref('rows', order_by=index, cascade="all,delete"))
 
   __mapper_args__ = {
     'polymorphic_identity': 'row',
