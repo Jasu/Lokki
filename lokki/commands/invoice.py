@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import os
 import json
+from pprint import pprint
 
 from prettytable import PrettyTable
 import pystache
@@ -194,17 +195,24 @@ def commandInvoiceShow(args, session):
                 extra.append('note')
             if isinstance(row, CompositeRow):
                 extra.append('composite')
-                table.add_row([
-                    row.index,
-                    row.title,
-                    row.getNumberOfUnits(),
-                    row.getPricePerUnit(),
-                    row.getTotal(),
-                    ', '.join(extra)
-                ])
+            if row.external_source != 'lk': 
+                extra.append(row.external_source)
+            table.add_row([
+                row.index,
+                row.title,
+                formatNumber(row.getNumberOfUnits()),
+                formatNumber(row.getPricePerUnit()),
+                formatNumber(row.getTotal()),
+                ', '.join(extra)
+            ])
 
         print('')
         print(table)
+
+        print('')
+        print('Total without VAT:   ' + formatNumber(invoice.getTotal()))
+        print('Total VAT:           ' + formatNumber(invoice.getTotalVAT()))
+        print('Total with VAT       ' + formatNumber(invoice.getTotalWithVAT()))
 
 
 def commandInvoiceList(args, session):
@@ -264,6 +272,7 @@ def commandInvoiceUnbill(args, session):
 def _getTemplateArguments(invoice):
     rows = []
     composite_rows = []
+    simple_rows = []
 
     total = Decimal(0)
     total_vat = Decimal(0)
@@ -295,6 +304,8 @@ def _getTemplateArguments(invoice):
                     formatNumber(row_total * (1 + Decimal(row.vat))),
                 })
             composite_rows.append(rowData)
+        else:
+            simple_rows.append(rowData)
 
         rows.append(rowData)
 
@@ -306,6 +317,9 @@ def _getTemplateArguments(invoice):
 
     return {
         'rows': rows,
+        'has_simple_rows': len(simple_rows) > 0,
+        'simple_rows': simple_rows,
+        'has_composite_rows': len(composite_rows) > 0,
         'composite_rows': composite_rows,
         'invoice': invoice,
         'n': '%05d' % invoice.invoice_number,
@@ -372,6 +386,8 @@ def commandInvoiceGenerate(args, session):
 
 def _jsonPrintInvoice(invoice):
     rows = []
+    simple_rows = []
+    composite_rows = []
     for row in invoice.rows:
         rowTable = {
             'title': row.title,
@@ -394,6 +410,9 @@ def _jsonPrintInvoice(invoice):
                     'total': float(Decimal(subrow.num_units)
                                    * Decimal(subrow.price_per_unit)),
                 })
+            composite_rows.append(rowTable)
+        else:
+            simple_rows.append(rowTable)
         rows.append(rowTable)
     print(json.dumps({
         'invoice': {
@@ -426,5 +445,9 @@ def _jsonPrintInvoice(invoice):
           'client_country': invoice.client_country,
           'client_company_number': invoice.client_company_number,
           'client_vat_number': invoice.client_vat_number,
+
+          'rows': rows,
+          'simple_rows': simple_rows,
+          'composite_rows': composite_rows,
           }
     }))

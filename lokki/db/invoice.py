@@ -56,3 +56,12 @@ class Invoice(Base):
         for row in self.rows:
             total += row.getTotal()
         return total
+
+    def getTotalVAT(self):
+        total = Decimal(0)
+        for row in self.rows:
+            total += row.getTotal() * Decimal(row.vat)
+        return total
+
+    def getTotalWithVAT(self):
+        return self.getTotal() + self.getTotalVAT()
