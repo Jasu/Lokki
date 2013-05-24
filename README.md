@@ -255,6 +255,10 @@ Command line billing.
 
     lk composite get \[--invoice-number 1\] row-index setting-name
 
+#### Moving subrow between composite rows
+
+    lk subrow mv \[--invoice-number 1\] src-row-index target-row-index subrow-index
+
 ### Managing event handlers
 
   Event handlers are shell commands that are executed when an event is 

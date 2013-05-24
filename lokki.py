@@ -56,7 +56,8 @@ from lokki.commands.subrow import (
   commandSubrowAdd, 
   commandSubrowRemove, 
   commandSubrowSet, 
-  commandSubrowGet
+  commandSubrowGet,
+  commandSubrowMv
   )
 
 from lokki.commands.event import (
@@ -353,6 +354,13 @@ subrowGetSubcommandParser.add_argument('--invoice_number', help='Invoice number'
 subrowGetSubcommandParser.add_argument('--row_number', help='Composite row number', required=False)
 subrowGetSubcommandParser.add_argument('index', help='Subrow index', nargs='?')
 subrowGetSubcommandParser.add_argument('setting_name', help='Setting name')
+
+subrowMvSubcommandParser = subrowSubcommandSubParsers.add_parser('mv')
+subrowMvSubcommandParser.set_defaults(func=commandSubrowMv)
+subrowMvSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+subrowMvSubcommandParser.add_argument('src_row_index', help='Source composite row index')
+subrowMvSubcommandParser.add_argument('dst_row_index', help='Destination composite row index')
+subrowMvSubcommandParser.add_argument('subrow_index', help='Subrow index')
 
 ###############################################################################
 # COMMAND event                                                               #
