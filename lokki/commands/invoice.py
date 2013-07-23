@@ -7,9 +7,11 @@ from pprint import pprint
 from prettytable import PrettyTable
 import pystache
 
+from lokki.index import compressIndices
 from lokki.util import dieIf, formatNumber
 from lokki.db.invoice import Invoice
 from lokki.db.client import Client
+from lokki.db.row import Row
 from lokki.db.compositerow import CompositeRow
 from lokki.invoice import *
 from lokki.config import getSetting, isConfigurationValid
@@ -267,6 +269,37 @@ def commandInvoiceUnbill(args, session):
 
     print("Marked invoice '"
           + str(invoice.invoice_number) + "' as not billed.")
+
+
+def commandInvoiceMerge(args, session):
+    sourceInvoice = (session.query(Invoice)
+                    .filter_by(invoice_number=args.source_invoice_number)
+                    .first())
+
+    targetInvoice = (session.query(Invoice)
+                    .filter_by(invoice_number=args.target_invoice_number)
+                    .first())
+
+    dieIf(not sourceInvoice, "Source invoice not found.")
+    dieIf(not targetInvoice, "Target invoice not found.")
+    dieIf(sourceInvoice.is_billed, "Source invoice is billed.")
+    dieIf(targetInvoice.is_billed, "Target invoice is billed.")
+
+    #Make copy of the array, since elements are removed from it during moving,
+    #making for loop to iterate only 1/2 rows.
+    rows = sourceInvoice.rows[:]
+    for row in rows:
+        print ("Moving row #" + str(row.id) + ".")
+        row.invoice = targetInvoice
+
+    session.commit()
+
+    compressIndices(session, Row, invoice_id=targetInvoice.id)
+
+    session.commit()
+
+    print("Moved rows from invoice #" + str(args.source_invoice_number)
+            + " to invoice #" + str(args.target_invoice_number) + ".")
 
 
 def _getTemplateArguments(invoice):

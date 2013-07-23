@@ -9,7 +9,9 @@ def dieIf(condition, msg):
 
 
 def formatNumber(number):
-  if isinstance(number, str):
-    number = Decimal(number)
-  return str(number.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)).replace('.', ',')
+    if (number == None):
+        return "None"
+    if isinstance(number, str):
+        number = Decimal(number)
+    return str(number.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)).replace('.', ',')
 

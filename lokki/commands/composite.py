@@ -2,6 +2,7 @@
 Commands to manipulate composite rows.
 """
 
+from lokki.index import compressIndices
 from lokki.db.compositerow import CompositeRow
 from lokki.db.subrow import Subrow
 from lokki.db.row import Row
@@ -54,6 +55,32 @@ def commandCompositeRemove(args, session):
   session.commit()
 
   print("Deleted row '" + str(row.index) + "'.")
+
+def commandCompositeMerge(args, session):
+    invoice = beginRowCommand(args, session)
+    sourceRow = invoice.rows[int(args.source_index) - 1] 
+    targetRow = invoice.rows[int(args.target_index) - 1] 
+    dieIf(not isinstance(sourceRow, CompositeRow), 
+          "Source row is not a composite row.");
+    dieIf(not isinstance(targetRow, CompositeRow), 
+          "Target row is not a composite row.");
+    dieIf(sourceRow == targetRow, 
+          "Source and target rows cannot be the same row.")
+
+    subrows = sourceRow.subrows[:]
+    for subrow in subrows:
+        subrow.row = targetRow
+
+    session.delete(sourceRow);
+
+    session.commit();
+
+    compressIndices(session, Subrow, row_id=targetRow.id)
+    compressIndices(session, Row, invoice_id=invoice.id)
+
+    session.commit();
+
+
 
 def commandCompositeShow(args, session):
   invoice = beginRowCommand(args, session)

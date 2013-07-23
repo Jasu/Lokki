@@ -36,6 +36,7 @@ from lokki.commands.invoice import (
   commandInvoiceList, 
   commandInvoiceBill, 
   commandInvoiceUnbill,
+  commandInvoiceMerge,
   commandInvoiceGenerate
   )
 
@@ -49,7 +50,8 @@ from lokki.commands.row import (
 from lokki.commands.composite import (
   commandCompositeAdd, 
   commandCompositeRemove, 
-  commandCompositeShow
+  commandCompositeShow,
+  commandCompositeMerge
   )
 
 from lokki.commands.subrow import (
@@ -228,6 +230,11 @@ invoiceUnbillSubcommandParser = invoiceSubcommandSubParsers.add_parser('unbill')
 invoiceUnbillSubcommandParser.add_argument('invoice_number', help='Invoice number', nargs='?')
 invoiceUnbillSubcommandParser.set_defaults(func=commandInvoiceUnbill)
 
+invoiceUnbillSubcommandParser = invoiceSubcommandSubParsers.add_parser('merge')
+invoiceUnbillSubcommandParser.add_argument('source_invoice_number', help='Source invoice number')
+invoiceUnbillSubcommandParser.add_argument('target_invoice_number', help='Target invoice number')
+invoiceUnbillSubcommandParser.set_defaults(func=commandInvoiceMerge)
+
 invoiceGenerateSubcommandParser = (
   invoiceSubcommandSubParsers.add_parser('generate'))
 invoiceGenerateSubcommandParser.add_argument('--filename', 
@@ -310,6 +317,12 @@ compositeShowSubcommandParser = compositeSubcommandSubParsers.add_parser('show')
 compositeShowSubcommandParser.set_defaults(func=commandCompositeShow)
 compositeShowSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
 compositeShowSubcommandParser.add_argument('index', help='Composite index')
+
+compositeShowSubcommandParser = compositeSubcommandSubParsers.add_parser('merge')
+compositeShowSubcommandParser.set_defaults(func=commandCompositeMerge)
+compositeShowSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
+compositeShowSubcommandParser.add_argument('source_index', help='Source row index')
+compositeShowSubcommandParser.add_argument('target_index', help='Target row index')
 
 ###############################################################################
 # COMMAND subrow                                                              #
