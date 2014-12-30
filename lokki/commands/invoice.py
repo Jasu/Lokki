@@ -221,7 +221,7 @@ def commandInvoiceList(args, session):
     dieIf(not isConfigurationValid(session),
           "Cannot execute invoicing commands with incomplete configuration.")
     invoices = session.query(Invoice)
-    table = PrettyTable(['Number', 'Date', 'Reference', 'Client', 'Sum'])
+    table = PrettyTable(['Number', 'Date', 'Reference', 'Client', 'Sum', 'Status'])
     table.padding_width = 1
 
     for invoice in invoices:
@@ -231,6 +231,7 @@ def commandInvoiceList(args, session):
             invoice.reference,
             invoice.client.name,
             invoice.getTotal(),
+            "Billed" if invoice.is_billed else "Not billed",
         ])
 
     print(table)
@@ -316,6 +317,7 @@ def _getTemplateArguments(invoice):
             'vat': formatNumber(row.vat),
             'vat_percentage': formatNumber(Decimal(row.vat) * 100),
             'total': formatNumber(Decimal(row.getTotal())),
+            'total_vat': formatNumber(row.getTotal() * Decimal(row.vat)),
             'total_with_vat':
             formatNumber(row.getTotal() * (1 + Decimal(row.vat))),
         }
@@ -363,6 +365,10 @@ def _getTemplateArguments(invoice):
         'invoice_d': '%02d' % invoice.date.day,
         'invoice_m': '%02d' % invoice.date.month,
         'invoice_y': '%04d' % invoice.date.year,
+
+        'due_d': '%02d' % invoice.due_date.day,
+        'due_m': '%02d' % invoice.due_date.month,
+        'due_y': '%04d' % invoice.due_date.year,
 
         'lokki_dir': lokki_dir,
 

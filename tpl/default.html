@@ -33,9 +33,9 @@
         <div id="details">
           <dl>
             <dt class="date">Päiväys</dt>
-            <dd class="date">{{invoice.date}}</dd>
+            <dd class="date">{{invoice_d}}.{{invoice_m}}.{{invoice_y}}</dd>
             <dt class="duedate">Eräpäivä</dt>
-            <dd class="duedate">{{invoice.due_date}}</dd>
+            <dd class="duedate">{{due_d}}.{{due_m}}.{{due_y}}</dd>
             <dt class="reference">Viitenumero</dt>
             <dd class="reference">{{invoice.reference}}</dd>
             <dt class="invoice_number">Laskun numero</dt>
@@ -144,7 +144,7 @@
         <th rowspan="2" class="from-iban">Tililtä nro</th>
         <td rowspan="2" class="from-iban"></td>
         <th class="due_date">Eräpäivä</th>
-        <td class="due_date">{{invoice.due_date}}</td>
+        <td class="due_date">{{due_d}}.{{due_m}}.{{due_y}}</td>
         <th class="total">EUR</th>
         <td class="total">{{total_with_vat}}</td>
       </tr>
