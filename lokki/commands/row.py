@@ -4,10 +4,12 @@ Commands for managing simple invoice rows.
 
 from lokki.db.simplerow import SimpleRow
 from lokki.db.row import Row
+from lokki.db.invoice import Invoice
 from lokki.invoice import findInvoice
 from lokki.util import dieIf
 from lokki.row import getNextRowIndex, findRow, beginRowCommand, jsonPrintRow
 from lokki.config import getSetting, isConfigurationValid
+from lokki.index import compressIndices
 
 def commandRowAdd(args, session):
   invoice = beginRowCommand(args, session)
@@ -73,4 +75,26 @@ def commandRowGet(args, session):
     "Setting '" + args.setting_name + "' does not exist.")
   print(getattr(row, args.setting_name))
 
+def commandRowMv(args, session):
+    dieIf(not isConfigurationValid(session), 
+        "Cannot execute row commands with incomplete configuration.")
+    src_invoice = (session.query(Invoice)
+        .filter_by(invoice_number=args.src_invoice_number)
+        .first())
+    dst_invoice = (session.query(Invoice)
+        .filter_by(invoice_number=args.dst_invoice_number)
+        .first())
+    dieIf(src_invoice.is_billed, 
+        "Cannot execute row commands on a billed source invoice.")
+    dieIf(dst_invoice.is_billed, 
+        "Cannot execute row commands on a billed source invoice.")
+    dieIf(int(args.row) > len(src_invoice.rows), 'Row index is too large.')
+    dieIf(int(args.row) < 1, 'Row index below one.')
+    row = src_invoice.rows[int(args.row) - 1]
+    row.invoice = dst_invoice
 
+    session.commit()
+    compressIndices(session, Row, invoice=dst_invoice)
+    compressIndices(session, Row, invoice=src_invoice)
+    session.commit()
+    print("Moved row '" + str(row.index) + "'.")

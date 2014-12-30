@@ -44,7 +44,8 @@ from lokki.commands.row import (
   commandRowAdd, 
   commandRowRemove, 
   commandRowSet, 
-  commandRowGet
+  commandRowGet,
+  commandRowMv
   )
 
 from lokki.commands.composite import (
@@ -289,6 +290,12 @@ rowGetSubcommandParser.set_defaults(func=commandRowGet)
 rowGetSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
 rowGetSubcommandParser.add_argument('index', help='Row index')
 rowGetSubcommandParser.add_argument('setting_name', help='Setting name')
+
+rowMvSubcommandParser = rowSubcommandSubParsers.add_parser('mv')
+rowMvSubcommandParser.set_defaults(func=commandRowMv)
+rowMvSubcommandParser.add_argument('src_invoice_number', help='Source invoice number')
+rowMvSubcommandParser.add_argument('dst_invoice_number', help='Destination invoice number')
+rowMvSubcommandParser.add_argument('row', help='Row index')
 
 ###############################################################################
 # COMMAND composite                                                           #
