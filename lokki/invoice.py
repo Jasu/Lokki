@@ -81,6 +81,7 @@ def initializeSellerFields(session, invoice):
   if 'seller-country' in configuration:
     invoice.seller_country = configuration['seller-country']
   invoice.seller_iban = configuration['seller-iban']
+  invoice.seller_phone_number = configuration['seller-phone-number']
   invoice.seller_company_number = configuration['seller-company-number']
   if 'seller-vat-number' in configuration:
     invoice.seller_vat_number = configuration['seller-vat-number']
