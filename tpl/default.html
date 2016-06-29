@@ -20,7 +20,7 @@
           <span class="name">{{invoice.client_name}}</span>
           <span class="address">{{invoice.client_address}}</span>
           {{#invoice.client_address_2}}
-            <span class="address">{{client_address_2}}</span>
+          <br/><span class="address">{{client_address_2}}</span>
           {{/invoice.client_address_2}}
           <span class="zip_code">{{invoice.client_zip_code}}</span>
           <span class="city">{{invoice.client_city}}</span>
@@ -99,9 +99,9 @@
           <dt class="address">Postiosoite</dt>
           <dd class="address">
             <span class="address">{{invoice.seller_address}}</span>
-            {{#invoice.seller_address2}}
-              <span class="address_2">{{invoice.seller_address_2}}</span>
-            {{/invoice.seller_address2}}
+            {{#invoice.seller_address_2}}
+            <br/><span class="address_2">{{invoice.seller_address_2}}</span>
+            {{/invoice.seller_address_2}}
             <span class="zip">{{invoice.seller_zip_code}}</span>
             <span class="city">{{invoice.seller_city}}</span>
           </dd>
@@ -154,39 +154,41 @@
       <div id="page2">
         <h1>Laskurivien erittely</h1>
         {{#composite_rows}}
-          <h2>{{title}}</h2>
-          <table class="composite_details rows">
-            <tr>
-              <th class="title">Nimeke</th>
-              <th class="price_per_unit">á-hinta</th>
-              <th class="num_units">Määrä</th>
-              <th class="total">Hinta</th>
-              <th class="vat">ALV-kanta</th>
-              <th class="total_with_vat">Hinta veroineen</th>
-            </tr>
-            {{#subrows}}
+          <div class="composite_details_wrapper">
+            <h2>{{title}}</h2>
+            <table class="composite_details rows">
               <tr>
-                <td class="title">{{title}}</th>
-                <td class="price_per_unit">{{price_per_unit}} {{currency}}</th>
-                <td class="num_units">{{num_units}}</th>
-                <td class="total">{{total}} {{currency}}</th>
-                <td class="vat">{{vat_percentage}}</th>
-                <td class="total_with_vat">{{total_with_vat}} {{currency}}</th>
+                <th class="title">Nimeke</th>
+                <th class="price_per_unit">á-hinta</th>
+                <th class="num_units">Määrä</th>
+                <th class="total">Hinta</th>
+                <th class="vat">ALV-kanta</th>
+                <th class="total_with_vat">Hinta veroineen</th>
               </tr>
-            {{/subrows}}
-            <tr class="tally-row">
-              <th colspan="3">Yhteensä (veroton):</td>
-              <td>{{total}} {{currency}}</td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr class="tally-row">
-              <th colspan="3">Veron määrä:</td>
-              <td>{{total_vat}} {{currency}}</td>
-              <th>Veroineen:</th>
-              <td class="grand_total">{{total_with_vat}} {{currency}}</td>
-            </tr>
-          </table>
+              {{#subrows}}
+                <tr>
+                  <td class="title">{{title}}</th>
+                  <td class="price_per_unit">{{price_per_unit}} {{currency}}</th>
+                  <td class="num_units">{{num_units}}</th>
+                  <td class="total">{{total}} {{currency}}</th>
+                  <td class="vat">{{vat_percentage}}</th>
+                  <td class="total_with_vat">{{total_with_vat}} {{currency}}</th>
+                </tr>
+              {{/subrows}}
+              <tr class="tally-row">
+                <th colspan="3">Yhteensä (veroton):</td>
+                <td>{{total}} {{currency}}</td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr class="tally-row">
+                <th colspan="3">Veron määrä:</td>
+                <td>{{total_vat}} {{currency}}</td>
+                <th>Veroineen:</th>
+                <td class="grand_total">{{total_with_vat}} {{currency}}</td>
+              </tr>
+            </table>
+          </div>
         {{/composite_rows}}
       </div>
     {{/show_details}}
