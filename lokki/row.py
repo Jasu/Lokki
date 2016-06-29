@@ -23,7 +23,7 @@ def findRow(args, invoice, session, type=SimpleRow):
     row = invoice.rows[int(index) - 1]
   else:
     row = invoice.rows[-1]
-  dieIf(not isinstance(row, type), 'Selected row is not a simple row.')
+  dieIf(type and not isinstance(row, type), 'Selected row is not a simple row.')
   return row
   
 def beginRowCommand(args, session, readonly=False):
