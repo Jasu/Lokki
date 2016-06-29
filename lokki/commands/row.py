@@ -58,7 +58,7 @@ def commandRowRemove(args, session):
 
 def commandRowSet(args, session):
   invoice = beginRowCommand(args, session)
-  row = findRow(args, invoice, session)
+  row = findRow(args, invoice, session, type=None)
   dieIf(not hasattr(row, args.setting_name), 
     "Setting '" + args.setting_name + "' does not exist.")
 
@@ -70,7 +70,7 @@ def commandRowSet(args, session):
 
 def commandRowGet(args, session):
   invoice = beginRowCommand(args, session, readonly=True)
-  row = findRow(args, invoice, session)
+  row = findRow(args, invoice, session, type=None)
   dieIf(not hasattr(row, args.setting_name), 
     "Setting '" + args.setting_name + "' does not exist.")
   print(getattr(row, args.setting_name))
