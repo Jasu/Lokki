@@ -221,7 +221,7 @@ def commandInvoiceList(args, session):
     dieIf(not isConfigurationValid(session),
           "Cannot execute invoicing commands with incomplete configuration.")
     invoices = session.query(Invoice)
-    table = PrettyTable(['Number', 'Date', 'Reference', 'Client', 'Sum', 'With VAT', 'Status'])
+    table = PrettyTable(['Number', 'Date', 'Reference', 'Client', 'Sum', 'VAT', 'With VAT', 'Status'])
     table.padding_width = 1
 
     for invoice in invoices:
@@ -231,6 +231,7 @@ def commandInvoiceList(args, session):
             invoice.reference,
             invoice.client.name,
             invoice.getTotal(),
+            invoice.getTotalVAT(),
             invoice.getTotalWithVAT(),
             "Billed" if invoice.is_billed else "Not billed",
         ])
