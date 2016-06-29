@@ -59,9 +59,9 @@ def commandSubrowSet(args, session):
     setattr(subrow, args.setting_name, args.setting_value)
     session.commit()
   
-    print('Updated subrow ' + subrow.index 
-          + ' of row ' + row.index 
-          + ' of invoice ' + invoice.invoice_number + '.')
+    print('Updated subrow ' + str(subrow.index)
+          + ' of row ' + str(row.index)
+          + ' of invoice ' + str(invoice.invoice_number) + '.')
 
 def commandSubrowMv(args, session):
     invoice = beginRowCommand(args, session)
