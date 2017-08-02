@@ -363,7 +363,7 @@ subrowRemoveSubcommandParser.add_argument('subrow_index', help='Subrow index', n
 subrowSetSubcommandParser = subrowSubcommandSubParsers.add_parser('set')
 subrowSetSubcommandParser.set_defaults(func=commandSubrowSet)
 subrowSetSubcommandParser.add_argument('--invoice_number', help='Invoice number', required=False)
-subrowSetSubcommandParser.add_argument('--row_number', help='Composite row number', required=False)
+subrowSetSubcommandParser.add_argument('--row', help='Composite row number', required=False)
 subrowSetSubcommandParser.add_argument('subrow_index', help='Subrow index', nargs='?')
 subrowSetSubcommandParser.add_argument('setting_name', help='Setting name')
 subrowSetSubcommandParser.add_argument('setting_value', help='Setting value')

@@ -2,6 +2,7 @@ from lokki.db.row import Row
 from decimal import Decimal
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship, backref
+from math import ceil
 
 class CompositeRow(Row):
   """
@@ -19,7 +20,7 @@ class CompositeRow(Row):
     result = Decimal(0)
     for subrow in self.subrows:
       result += Decimal(subrow.num_units)
-    return result
+    return Decimal(ceil(result))
 
   def getPricePerUnit(self):
     """
@@ -35,9 +36,12 @@ class CompositeRow(Row):
     return result
 
   def getTotal(self):
-    result = Decimal(0)
+    if len(self.subrows) < 0:
+      return 0
+    units = Decimal(0)
+    price_per_unit = Decimal(0)
     for subrow in self.subrows:
-        result += Decimal(subrow.price_per_unit) * Decimal(subrow.num_units)
-
-    return result
+        units += Decimal(subrow.num_units)
+        price_per_unit = subrow.price_per_unit
+    return Decimal(price_per_unit) * ceil(units)
 
